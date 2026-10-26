@@ -353,6 +353,7 @@
                         <span class="block font-semibold text-slate-200 text-[11px]">Growth and inflation</span>
                         <div class="pair-grid">
                             <div class="contents"><label class="font-semibold text-slate-300 whitespace-nowrap">Cash Growth (%)</label><input type="number" id="inp-return-cash" value="3.0" step="0.1" class="w-14 bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-2 focus:ring-indigo-500"></div><div class="contents"><label class="font-semibold text-slate-300 whitespace-nowrap">Pre-Ret Growth (%)</label><input type="number" id="inp-return-preret" value="7.0" step="0.1" class="w-14 bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-2 focus:ring-indigo-500"></div><div class="contents"><label class="font-semibold text-slate-300 whitespace-nowrap">Post-Ret Growth (%)</label><input type="number" id="inp-return-postret" value="6.0" step="0.1" class="w-14 bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-2 focus:ring-indigo-500"></div><div class="contents"><label class="font-semibold text-slate-300 whitespace-nowrap" title="Also used as the cost-of-living adjustment (COLA) for Social Security and pensions">Inflation/COLA (%)</label><input type="number" id="inp-inflation-rate" value="2.5" step="0.1" class="w-14 bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                            <div class="contents"><label class="font-semibold text-slate-300 whitespace-nowrap" title="Typical yearly ups and downs of your investments (standard deviation). Used only by the Risk tab.">Volatility (%)</label><input type="number" id="inp-volatility" value="12" step="1" min="0" max="40" class="w-14 bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-2 focus:ring-indigo-500"></div>
                         </div>
                         
                         
@@ -419,6 +420,7 @@
                         <button type="button" role="tab" data-tab="cashflow" class="tab-btn px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition border-transparent text-slate-500 hover:text-slate-800" aria-selected="false">Cash Flow</button>
                         <button type="button" role="tab" data-tab="roth" class="tab-btn px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition border-transparent text-slate-500 hover:text-slate-800" aria-selected="false">Roth</button>
                         <button type="button" role="tab" data-tab="ss" class="tab-btn px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition border-transparent text-slate-500 hover:text-slate-800" aria-selected="false">Social Security</button>
+                        <button type="button" role="tab" data-tab="risk" class="tab-btn px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition border-transparent text-slate-500 hover:text-slate-800" aria-selected="false">Risk</button>
                         <button type="button" role="tab" data-tab="whatif" class="tab-btn px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition border-transparent text-slate-500 hover:text-slate-800" aria-selected="false">What-if</button>
                         <button type="button" role="tab" data-tab="scenarios" class="tab-btn px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition border-transparent text-slate-500 hover:text-slate-800" aria-selected="false">Scenarios</button>
                     </div>
@@ -636,6 +638,38 @@
                     <p class="text-[11px] text-slate-400">Each claiming age is run on your current inputs and ranked by After-Tax Ending Wealth. Benefits scale from the amount you entered: about 70% of the age-67 amount at 62 up to 124% at 70 (full retirement age assumed to be 67), plus the COLA earned while waiting. Strategies that leave spending unfunded are not recommended. Educational estimate, not tax advice.</p>
                 </section>
             </div>
+                    <div id="tab-risk" class="space-y-6 hidden">
+                <section id="risk-card" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-4">
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                            <h2 class="text-base font-bold text-slate-900 tracking-tight">Plan Success Probability</h2>
+                            <button type="button" id="btn-risk-info" class="w-6 h-6 rounded-full border border-slate-300 text-indigo-600 hover:bg-indigo-50 flex items-center justify-center" aria-label="How is the success probability calculated?" aria-haspopup="dialog" title="How is this calculated?"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></button>
+                        </div>
+                        <span id="risk-badge" class="text-[11px] bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full font-semibold"></span>
+                    </div>
+                    <div id="risk-headline" class="rounded-xl border-2 px-5 py-4 flex items-center gap-5 flex-wrap bg-slate-50 border-slate-200">
+                        <div><div id="risk-pct" class="text-4xl font-bold text-slate-800"></div><div id="risk-label" class="text-xs font-bold uppercase tracking-wider text-slate-500"></div></div>
+                        <p id="risk-sub" class="text-sm text-slate-700 flex-1 min-w-[16rem]"></p>
+                    </div>
+                    <div class="h-72"><canvas id="risk-chart"></canvas></div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-right border-collapse">
+                            <thead class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200"><tr><th class="py-2 px-2 text-left">Ending outcome (future dollars)</th><th class="py-2 px-2">Total assets</th><th class="py-2 px-2 bg-emerald-50 text-emerald-900">After-tax ending</th></tr></thead>
+                            <tbody id="risk-outcomes-body" class="text-slate-700"></tbody>
+                        </table>
+                    </div>
+                    <p id="risk-failnote" class="text-xs text-slate-600"></p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-right border-collapse">
+                            <thead class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200"><tr><th id="risk-levers-title" class="py-2 px-2 text-left"></th><th class="py-2 px-2">Success</th><th class="py-2 px-2">Change</th></tr></thead>
+                            <tbody id="risk-levers-body" class="text-slate-700"></tbody>
+                        </table>
+                    </div>
+                    <p id="risk-levers-note" class="text-[11px] text-slate-400"></p>
+                    <p class="text-[11px] text-slate-400">Each simulated path draws a random market return every year around the growth inputs (volatility set in section 5) and applies it to brokerage, IRA and Roth balances. Cash earns its fixed rate and inflation stays constant. Taxes, RMDs, Social Security, IRMAA and the withdrawal order are recalculated on every path. Funded means spending is met every year through the plan-to age. The typical outcome is lower than the single-path projection because ups and downs reduce compound growth. The stress-test input is ignored here. Educational estimate, not a guarantee.</p>
+                </section>
+            </div>
                     <div id="tab-whatif" class="space-y-6 hidden">
                 <section id="sens-card" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                     <div class="border-b border-slate-200 bg-slate-50/70 px-5 py-3.5"><h2 class="text-sm font-bold text-slate-900 tracking-tight">Sensitivity Analysis</h2></div>
@@ -774,6 +808,37 @@
         </div>
     </div>
     <div id="print-root"></div>
+
+    <div id="modal-risk-info" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-2xl w-full mx-4 overflow-hidden max-h-[90vh] flex flex-col" role="dialog" aria-labelledby="risk-info-title">
+            <div class="bg-indigo-950 text-white px-6 py-4 flex justify-between items-center border-b border-indigo-900 flex-none">
+                <h3 id="risk-info-title" class="text-base font-bold flex items-center space-x-2">
+                    <svg class="w-5 h-5 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span>How the success probability is calculated</span>
+                </h3>
+                <button id="btn-close-risk-info" class="text-slate-400 hover:text-white transition" aria-label="Close"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-5 text-xs leading-relaxed text-slate-600">
+                <p class="text-sm text-slate-800"><b>The question it answers:</b> if markets turn out differently from your single average-return assumption, in how many futures does your plan still pay for your spending every year through your plan-to age?</p>
+                <ol class="space-y-3">
+                    <li class="flex gap-3"><span class="flex-none w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center mt-0.5">1</span><span><b class="text-slate-900">Start from your current inputs</b><br>Balances, spending, Social Security, pensions, Roth strategy, withdrawal order and tax rules are exactly the ones used everywhere else in the tool.</span></li>
+                    <li class="flex gap-3"><span class="flex-none w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center mt-0.5">2</span><span><b class="text-slate-900">Create 1,000 possible market paths</b><br>Each year of each path gets a random investment return centered on your growth inputs (before and after retirement) with the yearly volatility you set in section 5. Returns come from a bell curve and each year is independent of the others.</span></li>
+                    <li class="flex gap-3"><span class="flex-none w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center mt-0.5">3</span><span><b class="text-slate-900">Run your whole plan on every path</b><br>Taxes, required distributions, Social Security taxation, IRMAA, Roth conversions and withdrawals are recalculated year by year on each path, so poor early returns also change taxes and withdrawals.</span></li>
+                    <li class="flex gap-3"><span class="flex-none w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center mt-0.5">4</span><span><b class="text-slate-900">Count the paths that stay funded</b><br>A path is funded when spending is met in every year and the portfolio never runs out. Success probability is funded paths divided by 1,000.</span></li>
+                    <li class="flex gap-3"><span class="flex-none w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center mt-0.5">5</span><span><b class="text-slate-900">Draw the fan and the outcome table</b><br>For every year, the 10th, 25th, median, 75th and 90th percentile of total assets across the 1,000 paths form the shaded fan. The dashed line is the single-path projection used elsewhere in the tool.</span></li>
+                </ol>
+                <div><div class="font-bold text-slate-900 mb-1">How to read it</div>
+                    <ul class="list-disc pl-5 space-y-1"><li><b>90% or more</b> is Strong, <b>75 to 89%</b> Moderate, <b>60 to 74%</b> At risk, and below 60% High risk. These are rules of thumb, not guarantees.</li>
+                    <li>The <b>median</b> outcome is lower than the single-path projection because ups and downs reduce compound growth ("volatility drag").</li>
+                    <li>The <b>levers table</b> reruns the same market paths with one change at a time (lower spending, later retirement, Social Security at 70), so differences come from the change and not from luck. Those rows use the first 500 paths for speed.</li></ul></div>
+                <div><div class="font-bold text-slate-900 mb-1">Why the same answer every time</div><p>The random numbers use a fixed starting seed, so identical inputs always give identical results. Changing any input, including volatility, produces a new run.</p></div>
+                <div><div class="font-bold text-slate-900 mb-1">What it does not include</div>
+                    <ul class="list-disc pl-5 space-y-1"><li>Inflation is constant and cash earns its fixed rate in every path.</li><li>Returns are normally distributed with no crashes beyond what that allows, and no link between inflation and returns.</li><li>The stress-test input is ignored here, because the simulation already covers market risk.</li><li>Spending stays at your goal; the model does not cut spending in bad markets, so real-life flexibility would raise the odds.</li><li>Tax law is held constant, and long-term care or other large surprises are not modeled.</li></ul></div>
+                <div><div class="font-bold text-slate-900 mb-1">Choosing volatility</div><p>As a rough guide, a conservative mix is about 6 to 8%, a balanced mix about 10 to 12% (the default), and a stock-heavy mix 15 to 18%. Use the Volatility box in section 5, Rates &amp; Stress Test.</p></div>
+                <p class="text-[11px] text-slate-400">Educational estimate, not a forecast or a guarantee of results.</p>
+            </div>
+        </div>
+    </div>
 
     <div id="modal-assumptions" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
         <div class="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-xl w-full mx-4 overflow-hidden max-h-[90vh] flex flex-col">
@@ -1216,6 +1281,72 @@
             return ws;
         }
 
+
+        const xlLerp = (h1, h2, t) => { const pr = h => [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)), x = pr(h1), y = pr(h2); return 'FF' + x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, '0')).join('').toUpperCase(); };
+        function xlSheetSS(wb, c) {
+            const ws = wb.addWorksheet('Social Security', { properties: { tabColor: { argb: 'FF14B8A6' } }, views: [{ showGridLines: false }] });
+            ws.columns = [{ width: 46 }, ...Array(9).fill({ width: 13 })];
+            xlTitle(ws, 'Social Security Claiming Analysis', 'Ranked by After-Tax Ending Wealth. Benefits scale from 70% (age 62) to 124% (age 70) of the age-67 amount, plus COLA earned while waiting.', 10);
+            const a = c.ss; let r = 3;
+            if (a.none) { xlBand(ws, r, 'No Social Security benefit is entered, so claiming ages are not analyzed.', 10); return ws; }
+            const txt = k => a.mfj ? (a.has2 ? `you at ${k.a1}, spouse at ${k.a2}` : `you at ${k.a1}`) : `age ${k.a1}`, same = a.rec === a.cur;
+            xlBand(ws, r, `Recommendation: ${same ? 'current claiming ages are fine' : txt(a.rec)}  |  Current selection: ${txt(a.cur)}`, 10, 'FFD1FAE5', 'FF065F46'); r++;
+            a.reasons.forEach(t => { ws.mergeCells(r, 1, r, 10); const x = ws.getCell(r, 1); x.value = '\u2022 ' + t; x.alignment = { wrapText: true, vertical: 'top', indent: 1 }; ws.getRow(r).height = t.length > 130 ? 30 : 16; r++; });
+            r++;
+            const tag = k => `${k === a.rec ? ' (recommended)' : ''}${k === a.cur ? ' (current)' : ''}${k.funded ? '' : ' (not funded)'}`;
+            const head = (labels) => labels.forEach((h, k) => { const x = ws.getCell(r, k + 1); x.value = h; xlHead(x); });
+            const body = (vals, fmts, hl, n) => vals.forEach((v, k) => { const x = ws.getCell(r, k + 1); x.value = v; xlBody(x, fmts[k], n % 2); if (hl) { x.fill = xlFill('FFD1FAE5'); x.font = { bold: true }; } });
+            if (a.mfj && a.has1 && a.has2) {
+                xlBand(ws, r, 'After-tax ending wealth by claiming ages (rows: you, columns: spouse). Green border = recommended, blue border = current. Darker = more.', 10, XL.slate2, XL.slate7); r++;
+                head(['You \\ Spouse', ...SS_AGES]); r++;
+                const vals = a.combos.map(k => k.m.afterTax), lo = Math.min(...vals), hi = Math.max(...vals);
+                SS_AGES.forEach(r1 => {
+                    const lc = ws.getCell(r, 1); lc.value = r1; xlHead(lc, XL.slate7);
+                    SS_AGES.forEach((c2, j) => {
+                        const k = a.combos.find(q => q.a1 === r1 && q.a2 === c2), x = ws.getCell(r, j + 2), ratio = hi > lo ? (k.m.afterTax - lo) / (hi - lo) : 1;
+                        x.value = Math.round(k.m.afterTax); x.numFmt = XL_USD; x.fill = xlFill(xlLerp('F0FDF4', '34D399', ratio)); x.alignment = { horizontal: 'right' };
+                        x.font = { size: 9, bold: k === a.rec, strike: !k.funded, color: { argb: k.funded ? XL.ink : 'FF94A3B8' } };
+                        const edge = k === a.rec ? { style: 'medium', color: { argb: 'FF059669' } } : (k === a.cur ? { style: 'medium', color: { argb: 'FF6366F1' } } : { style: 'thin', color: { argb: 'FFFFFFFF' } });
+                        x.border = { top: edge, bottom: edge, left: edge, right: edge };
+                    });
+                    r++;
+                });
+                r++;
+                head(['Top combinations', 'Your benefit', 'Spouse benefit', 'Lifetime tax', 'After-tax ending', 'vs. current']); r++;
+                const top = a.ranked.slice(0, 6); if (!top.includes(a.cur)) top.push(a.cur);
+                top.forEach((k, n) => { body([txt(k) + tag(k), Math.round(k.inp.p1SSAmt), Math.round(k.inp.p2SSAmt), Math.round(k.m.tax), Math.round(k.m.afterTax), k === a.cur ? null : Math.round(k.m.afterTax - a.cur.m.afterTax)], [null, XL_USD, XL_USD, XL_USD, XL_USD, '+$#,##0;-$#,##0;"-"'], k === a.rec, n); r++; });
+            } else {
+                head(['Claim at', 'First-year benefit', 'Lifetime tax', 'IRMAA', 'After-tax ending', 'vs. current']); r++;
+                const pers = a.has1 ? 'a1' : 'a2';
+                a.combos.forEach((k, n) => { body([`Age ${k[pers]}` + tag(k), Math.round(a.has1 ? k.inp.p1SSAmt : k.inp.p2SSAmt), Math.round(k.m.tax), Math.round(k.m.irmaa), Math.round(k.m.afterTax), k === a.cur ? null : Math.round(k.m.afterTax - a.cur.m.afterTax)], [null, XL_USD, XL_USD, XL_USD, XL_USD, '+$#,##0;-$#,##0;"-"'], k === a.rec, n); r++; });
+            }
+            return ws;
+        }
+
+        function xlSheetRisk(wb, c) {
+            const a = c.risk, ws = wb.addWorksheet('Risk', { properties: { tabColor: { argb: 'FF6366F1' } }, views: [{ showGridLines: false }] });
+            ws.columns = [{ width: 46 }, { width: 16 }, { width: 16 }, { width: 16 }, { width: 16 }, { width: 16 }, { width: 16 }, { width: 3 }];
+            const pc = Math.round(a.success * 100), band = a.success >= 0.9 ? 'Strong' : a.success >= 0.75 ? 'Moderate' : a.success >= 0.6 ? 'At risk' : 'High risk';
+            const tone = a.success >= 0.9 ? ['FFD1FAE5', 'FF065F46'] : a.success >= 0.75 ? ['FFFEF3C7', 'FF92400E'] : a.success >= 0.6 ? ['FFFFEDD5', 'FF9A3412'] : ['FFFFE4E6', 'FF9F1239'];
+            xlTitle(ws, 'Plan Success Probability', `${a.n.toLocaleString()} simulated market paths | average returns ${(a.base.returnPre * 100).toFixed(1)}% before / ${(a.base.returnPost * 100).toFixed(1)}% after retirement | ${(a.base.volatility * 100).toFixed(0)}% yearly volatility`, 7);
+            let r = 3; xlBand(ws, r, `${pc}%  |  ${band}  |  ${a.funded.toLocaleString()} of ${a.n.toLocaleString()} paths stay fully funded through age ${a.base.p1TargetAge}  |  single-path projection: ${a.detFunded ? 'fully funded' : 'not fully funded'}`, 7, tone[0], tone[1]); r++;
+            const note = (t, h) => { ws.mergeCells(r, 1, r, 7); const x = ws.getCell(r, 1); x.value = t; x.font = { size: 9, color: { argb: XL.slate5 } }; x.alignment = { wrapText: true, vertical: 'top', indent: 1 }; ws.getRow(r).height = h || 28; r++; };
+            note('Each path draws a random yearly return around the growth inputs (normal, independent each year) and recalculates taxes, RMDs, Social Security, IRMAA and withdrawals. Cash earns its fixed rate and inflation stays constant. Funded = spending met every year through the plan-to age. The typical outcome is lower than the single-path projection because volatility reduces compound growth. The stress-test input is ignored. Educational estimate, not a guarantee.', 40);
+            r++;
+            ['Ending outcome (future dollars)', 'Total assets', 'After-tax ending'].forEach((h, k) => { const x = ws.getCell(r, k + 1); x.value = h; xlHead(x); }); r++;
+            a.outcomes.forEach((o, n) => { const vals = [`${Math.round(o.q * 100)}th percentile${o.q === 0.1 ? ' (poor markets)' : o.q === 0.5 ? ' (typical)' : o.q === 0.9 ? ' (strong markets)' : ''}`, Math.round(o.assets), Math.round(o.after)]; vals.forEach((v, k) => { const x = ws.getCell(r, k + 1); x.value = v; xlBody(x, k ? '$#,##0' : null, n % 2); if (o.q === 0.5) { x.fill = xlFill(XL.indigo1); x.font = { bold: true }; } }); r++; });
+            [['Single-path projection (no volatility)', Math.round(a.detEnd), Math.round(a.detAfter)]].forEach(vals => { vals.forEach((v, k) => { const x = ws.getCell(r, k + 1); x.value = v; xlBody(x, k ? XL_USD : null); x.font = { italic: true, color: { argb: XL.slate5 } }; }); r++; });
+            note(a.fails > 0 && a.depMedian ? `In the ${a.fails.toLocaleString()} paths that fail, assets run out around age ${Math.round(a.depMedian)} (one in ten failures runs out by age ${Math.round(a.depEarly)}).` : (a.fails > 0 ? `${a.fails.toLocaleString()} paths fall short of the spending goal in at least one year.` : 'No simulated path runs short of the spending goal.'), 18);
+            r++;
+            [a.above ? `Spending headroom (staying at or above ${Math.round(a.target * 100)}%)` : `What would improve the odds (target ${Math.round(a.target * 100)}%)`, 'Success', 'Change (pts)'].forEach((h, k) => { const x = ws.getCell(r, k + 1); x.value = h; xlHead(x); }); r++;
+            [['Current plan', a.levelBase, null], ...a.levers.map(l => [l.label, l.success, Math.abs(l.delta) < 0.0005 ? null : Math.round(l.delta * 100)])].forEach((row, n) => { row.forEach((v, k) => { const x = ws.getCell(r, k + 1); x.value = v; xlBody(x, k === 1 ? XL_PCT0 : (k === 2 ? '+0;-0;"-"' : null), n % 2); if (k === 2 && v) x.font = { bold: true, color: { argb: v > 0 ? XL.green : XL.red } }; }); r++; });
+            note(`Lever rows are quick estimates from the first ${a.leverN.toLocaleString()} paths, the same market paths for every row.`, 16);
+            r++; xlBand(ws, r, 'Simulated total assets by year (data for the chart)', 7, XL.slate2, XL.slate7); r++;
+            ['Your age', '10th percentile', '25th', 'Median', '75th', '90th percentile', 'Single-path'].forEach((h, k) => { const x = ws.getCell(r, k + 1); x.value = h; xlHead(x); }); r++;
+            const first = r; a.fan.forEach((f, n) => { [f.age, ...f.p.map(Math.round), Math.round(f.det)].forEach((v, k) => { const x = ws.getCell(r, k + 1); x.value = v; xlBody(x, k ? XL_USD : '0', n % 2); }); r++; });
+            return { ws, first, last: r - 1 };
+        }
+
         function xlSheetSensitivity(wb, c) {
             const ws = wb.addWorksheet('Sensitivity', { properties: { tabColor: { argb: 'FFF59E0B' } }, views: [{ showGridLines: false }] });
             ws.columns = [{ width: 46 }, { width: 16 }, { width: 14 }, { width: 16 }, { width: 14 }, { width: 14 }, { width: 24 }, { width: 3 }, { width: 46 }, { width: 16 }];
@@ -1261,7 +1392,7 @@
         function xlSer(s, idx, kind) {
             const cat = s.catIsText ? xlStrRef(s.catRef, s.cats) : xlNumRef(s.catRef, s.cats);
             const base = `<c:idx val="${idx}"/><c:order val="${idx}"/><c:tx><c:v>${xlEsc(s.name)}</c:v></c:tx>`;
-            if (kind === 'line') return `<c:ser>${base}<c:spPr><a:ln w="28575" cap="rnd">${xlSolid(s.color)}</a:ln></c:spPr><c:marker><c:symbol val="none"/></c:marker><c:cat>${cat}</c:cat><c:val>${xlNumRef(s.valRef, s.vals)}</c:val><c:smooth val="0"/></c:ser>`;
+            if (kind === 'line') return `<c:ser>${base}<c:spPr><a:ln w="${s.w || 28575}" cap="rnd">${xlSolid(s.color)}${s.dash ? '<a:prstDash val="dash"/>' : ''}</a:ln></c:spPr><c:marker><c:symbol val="none"/></c:marker><c:cat>${cat}</c:cat><c:val>${xlNumRef(s.valRef, s.vals)}</c:val><c:smooth val="0"/></c:ser>`;
             const dpts = (s.pointColors || []).map((col, i) => `<c:dPt><c:idx val="${i}"/><c:invertIfNegative val="0"/><c:bubble3D val="0"/><c:spPr>${xlSolid(col)}</c:spPr></c:dPt>`).join('');
             return `<c:ser>${base}<c:spPr>${xlSolid(s.color)}</c:spPr><c:invertIfNegative val="0"/>${dpts}<c:cat>${cat}</c:cat><c:val>${xlNumRef(s.valRef, s.vals)}</c:val></c:ser>`;
         }
@@ -1269,10 +1400,11 @@
             const horiz = sp.dir === 'bar', stacked = sp.grouping === 'stacked';
             const bars = sp.series.map((s, i) => xlSer(s, i, 'bar')).join('');
             const lines = (sp.lines || []).map((s, i) => xlSer(s, sp.series.length + i, 'line')).join('');
+            const barXml = sp.series.length ? `<c:barChart><c:barDir val="${horiz ? 'bar' : 'col'}"/><c:grouping val="${stacked ? 'stacked' : 'clustered'}"/><c:varyColors val="0"/>${bars}<c:gapWidth val="${sp.gap || 60}"/>${stacked ? '<c:overlap val="100"/>' : ''}<c:axId val="50010"/><c:axId val="50020"/></c:barChart>` : '';
             const grid = `<c:majorGridlines><c:spPr><a:ln w="6350">${xlSolid('E2E8F0')}</a:ln></c:spPr></c:majorGridlines>`;
             const noLine = '<c:spPr><a:ln><a:noFill/></a:ln></c:spPr>';
             return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><c:roundedCorners val="0"/><c:chart><c:title><c:tx><c:rich><a:bodyPr/><a:lstStyle/><a:p><a:pPr><a:defRPr sz="1200" b="1"/></a:pPr><a:r><a:rPr lang="en-US" sz="1200" b="1"/><a:t>${xlEsc(sp.title)}</a:t></a:r></a:p></c:rich></c:tx><c:overlay val="0"/></c:title><c:autoTitleDeleted val="0"/><c:plotArea><c:layout/><c:barChart><c:barDir val="${horiz ? 'bar' : 'col'}"/><c:grouping val="${stacked ? 'stacked' : 'clustered'}"/><c:varyColors val="0"/>${bars}<c:gapWidth val="${sp.gap || 60}"/>${stacked ? '<c:overlap val="100"/>' : ''}<c:axId val="50010"/><c:axId val="50020"/></c:barChart>${lines ? `<c:lineChart><c:grouping val="standard"/><c:varyColors val="0"/>${lines}<c:marker val="1"/><c:axId val="50010"/><c:axId val="50020"/></c:lineChart>` : ''}<c:catAx><c:axId val="50010"/><c:scaling><c:orientation val="${horiz ? 'maxMin' : 'minMax'}"/></c:scaling><c:delete val="0"/><c:axPos val="${horiz ? 'l' : 'b'}"/><c:numFmt formatCode="General" sourceLinked="0"/><c:majorTickMark val="none"/><c:minorTickMark val="none"/><c:tickLblPos val="low"/>${noLine}<c:crossAx val="50020"/><c:crosses val="autoZero"/><c:auto val="1"/><c:lblAlgn val="ctr"/><c:lblOffset val="100"/><c:noMultiLvlLbl val="0"/></c:catAx><c:valAx><c:axId val="50020"/><c:scaling><c:orientation val="minMax"/></c:scaling><c:delete val="0"/><c:axPos val="${horiz ? 'b' : 'l'}"/>${grid}<c:numFmt formatCode="${xlEsc(sp.fmt || '$#,##0')}" sourceLinked="0"/><c:majorTickMark val="none"/><c:minorTickMark val="none"/><c:tickLblPos val="nextTo"/>${noLine}<c:crossAx val="50010"/><c:crosses val="${horiz ? 'max' : 'autoZero'}"/><c:crossBetween val="between"/></c:valAx></c:plotArea>${sp.legend === false ? '' : '<c:legend><c:legendPos val="b"/><c:overlay val="0"/></c:legend>'}<c:plotVisOnly val="1"/><c:dispBlanksAs val="gap"/></c:chart><c:spPr><a:solidFill><a:srgbClr val="FFFFFF"/></a:solidFill><a:ln w="9525">${xlSolid('CBD5E1')}</a:ln></c:spPr></c:chartSpace>`;
+<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><c:roundedCorners val="0"/><c:chart><c:title><c:tx><c:rich><a:bodyPr/><a:lstStyle/><a:p><a:pPr><a:defRPr sz="1200" b="1"/></a:pPr><a:r><a:rPr lang="en-US" sz="1200" b="1"/><a:t>${xlEsc(sp.title)}</a:t></a:r></a:p></c:rich></c:tx><c:overlay val="0"/></c:title><c:autoTitleDeleted val="0"/><c:plotArea><c:layout/>${barXml}${lines ? `<c:lineChart><c:grouping val="standard"/><c:varyColors val="0"/>${lines}<c:marker val="1"/><c:axId val="50010"/><c:axId val="50020"/></c:lineChart>` : ''}<c:catAx><c:axId val="50010"/><c:scaling><c:orientation val="${horiz ? 'maxMin' : 'minMax'}"/></c:scaling><c:delete val="0"/><c:axPos val="${horiz ? 'l' : 'b'}"/><c:numFmt formatCode="General" sourceLinked="0"/><c:majorTickMark val="none"/><c:minorTickMark val="none"/><c:tickLblPos val="low"/>${noLine}<c:crossAx val="50020"/><c:crosses val="autoZero"/><c:auto val="1"/><c:lblAlgn val="ctr"/><c:lblOffset val="100"/><c:noMultiLvlLbl val="0"/></c:catAx><c:valAx><c:axId val="50020"/><c:scaling><c:orientation val="minMax"/></c:scaling><c:delete val="0"/><c:axPos val="${horiz ? 'b' : 'l'}"/>${grid}<c:numFmt formatCode="${xlEsc(sp.fmt || '$#,##0')}" sourceLinked="0"/><c:majorTickMark val="none"/><c:minorTickMark val="none"/><c:tickLblPos val="nextTo"/>${noLine}<c:crossAx val="50010"/><c:crosses val="${horiz ? 'max' : 'autoZero'}"/><c:crossBetween val="between"/></c:valAx></c:plotArea>${sp.legend === false ? '' : '<c:legend><c:legendPos val="b"/><c:overlay val="0"/></c:legend>'}<c:plotVisOnly val="1"/><c:dispBlanksAs val="gap"/></c:chart><c:spPr><a:solidFill><a:srgbClr val="FFFFFF"/></a:solidFill><a:ln w="9525">${xlSolid('CBD5E1')}</a:ln></c:spPr></c:chartSpace>`;
         }
         function xlDrawingXml(anchors) {
             return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -1302,7 +1434,7 @@
 
         async function buildExcelWorkbook(ExcelJSLib, JSZipLib, c) {
             const wb = new ExcelJSLib.Workbook(); wb.creator = BRAND.legal; wb.company = BRAND.legal; wb.title = 'Retirement Cash Flow & Tax Projection'; wb.keywords = `v${APP_VERSION}`; wb.subject = BRAND.tagline; wb.description = `\u00A9 ${new Date().getFullYear()} ${BRAND.legal}. ${BRAND.disclaimer}`; wb.created = new Date();
-            xlSheetInputs(wb, c); xlSheetSummary(wb, c); xlSheetRoth(wb, c);
+            xlSheetInputs(wb, c); xlSheetSummary(wb, c); xlSheetRoth(wb, c); xlSheetSS(wb, c); const riskX = xlSheetRisk(wb, c);
             const chartsWs = wb.addWorksheet('Charts', { properties: { tabColor: { argb: 'FF8B5CF6' } }, views: [{ showGridLines: false }] });
             xlTitle(chartsWs, 'Charts', 'Charts are native Excel charts linked to the Ledger tab and update if you edit the ledger values.', 20);
             if (c.results.some(r => r.isWorking)) xlSheetPreRetirement(wb, c);
@@ -1320,8 +1452,11 @@
             const sensChart = { chart: { title: 'Biggest effects on ending assets (change vs. current)', dir: 'bar', grouping: 'clustered', legend: false, gap: 40, series: [{ name: 'Change in ending assets', catIsText: true, catRef: `Sensitivity!$I$5:$I$${4 + n}`, cats: top.map(t => t.l), valRef: `Sensitivity!$J$5:$J$${4 + n}`, vals: top.map(t => Math.round(t.d)), color: '6366F1', pointColors: top.map(t => t.d >= 0 ? '10B981' : 'F43F5E') }] }, c1: 11, r1: 2, c2: 23, r2: 28 };
             if (c.inp.filingStatus === 'Single') wb.worksheets.forEach(ws => ws.eachRow(row => row.eachCell(cell => { if (typeof cell.value === 'string') cell.value = cell.value === 'Total SS' ? 'Social Security' : sgl(cell.value, true); })));
             wb.worksheets.forEach(sheet => { sheet.pageSetup = { orientation: 'landscape', fitToPage: true, fitToWidth: 1, fitToHeight: 0, paperSize: 1 }; sheet.headerFooter = { oddHeader: `&L&"Calibri,Bold"${BRAND.name}&C${BRAND.tagline}&R&D`, oddFooter: `&L\u00A9 ${new Date().getFullYear()} Second Inning Financial LLC&C&A&RPage &P of &N` }; });
+            const rk = c.risk, rcol = k => String.fromCharCode(66 + k);
+            const fanSer = (k, name, color, w, dash) => ({ name, catRef: `Risk!$A$${riskX.first}:$A$${riskX.last}`, cats: rk.fan.map(f => f.age), valRef: `Risk!$${rcol(k)}$${riskX.first}:$${rcol(k)}$${riskX.last}`, vals: rk.fan.map(f => Math.round(k === 5 ? f.det : f.p[k])), color, w, dash });
+            const riskChart = { chart: { title: 'Total assets across simulated markets (x-axis: your age)', dir: 'col', grouping: 'clustered', series: [], lines: [fanSer(0, '10th percentile', 'A5B4FC', 12700), fanSer(1, '25th', '818CF8', 12700), fanSer(2, 'Median', '4F46E5', 38100), fanSer(3, '75th', '818CF8', 12700), fanSer(4, '90th percentile', 'A5B4FC', 12700), fanSer(5, 'Single-path projection', '0F172A', 19050, true)] }, c1: 8, r1: 2, c2: 19, r2: 27 };
             const buf = await wb.xlsx.writeBuffer();
-            return xlInjectCharts(JSZipLib, buf, [{ sheetNo: chartsWs.id, charts }, { sheetNo: sens.ws.id, charts: [sensChart] }]);
+            return xlInjectCharts(JSZipLib, buf, [{ sheetNo: chartsWs.id, charts }, { sheetNo: sens.ws.id, charts: [sensChart] }, { sheetNo: riskX.ws.id, charts: [riskChart] }]);
         }
 
         function preRetirementTotals(rs) {
@@ -1354,7 +1489,7 @@
         function collectExportContext() {
             const inp = readInputs(), out = lastRunOut || runProjection(inp), m = scenarioMetrics(out);
             return {
-                inp, results: simulationResults, ledgerRows: simulationResults.filter(r => !r.isWorking), pre: preRetirementTotals(simulationResults), m, milestones: computeMilestones(simulationResults, m), sens: sensitivityData(), tax: activeTaxParams, roth: rothAnalysis(), asOf: TAX_LAW_AS_OF,
+                inp, results: simulationResults, ledgerRows: simulationResults.filter(r => !r.isWorking), pre: preRetirementTotals(simulationResults), m, milestones: computeMilestones(simulationResults, m), sens: sensitivityData(), tax: activeTaxParams, roth: rothAnalysis(), ss: ssAnalysis(), risk: riskAnalysis(), asOf: TAX_LAW_AS_OF,
                 name: (document.getElementById('scn-name') || {}).value || 'Scenario', today: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
                 strategyLabel: document.querySelector('#inp-roth-strategy option:checked').textContent.trim(),
                 texts: { solv: document.getElementById('summary-solvency-desc').textContent, tax: document.getElementById('summary-tax-desc').textContent, rec: document.getElementById('summary-rec-desc').textContent }
@@ -1501,6 +1636,7 @@
             const pensionBaseAmt = hasPension ? (parseFloat(document.getElementById('inp-pension-amt').value) || 0) : 0;
             const pensionStartAge = parseInt(document.getElementById('inp-pension-start-age').value) || 65;
             const pensionCola = inflation; // pensions use the Inflation/COLA assumption
+            const volatility = Math.min(0.5, Math.max(0, (parseFloat(document.getElementById('inp-volatility').value) || 0) / 100));
             const rmdSaveTo = ['cash', 'spend'].includes(document.getElementById('inp-rmd-save-to').value) ? document.getElementById('inp-rmd-save-to').value : 'brokerage';
             const heirTaxRate = Math.min(1, Math.max(0, (parseFloat(document.getElementById('inp-heir-tax-rate').value) || 0) / 100));
             const pensionSurvivorPct = Math.min(1, Math.max(0, (parseFloat(document.getElementById('inp-pension-survivor').value) || 0) / 100));
@@ -1517,7 +1653,7 @@
             const includeInvestIncome = capGainsOn; // one checkbox taxes interest, dividends and capital gains together
             const shockYear = parseInt(document.getElementById('inp-shock-year').value) || 0;
             const shockPct = (parseFloat(document.getElementById('inp-shock-pct').value) || 0) / 100;
-            return { filingStatus, p1Age, p1RetireAge, p1TargetAge, p2Age, p2RetireAge, p2TargetAge, currentSalary, salaryGrowth, contribCash, contribBrokerage, contribTrad, contribRoth, balCash, balBrokerage, balTrad, balRoth, returnCash, returnPre, returnPost, inflation, baseSpendingGoal, p1SSAmt, p1SSAge, p2SSAmt, p2SSAge, pensionBaseAmt, pensionStartAge, pensionCola, pensionSurvivorPct, p2PensionBaseAmt, p2PensionStartAge, p2PensionCola, p2PensionSurvivorPct, heirTaxRate, rmdSaveTo, todaysDollars, rothStrategy, rothFixedAmt, allowWorkConversions, capGainsOn, basisPct, includeInvestIncome, shockYear, shockPct };
+            return { filingStatus, p1Age, p1RetireAge, p1TargetAge, p2Age, p2RetireAge, p2TargetAge, currentSalary, salaryGrowth, contribCash, contribBrokerage, contribTrad, contribRoth, balCash, balBrokerage, balTrad, balRoth, returnCash, returnPre, returnPost, inflation, baseSpendingGoal, p1SSAmt, p1SSAge, p2SSAmt, p2SSAge, pensionBaseAmt, pensionStartAge, pensionCola, pensionSurvivorPct, p2PensionBaseAmt, p2PensionStartAge, p2PensionCola, p2PensionSurvivorPct, heirTaxRate, volatility, rmdSaveTo, todaysDollars, rothStrategy, rothFixedAmt, allowWorkConversions, capGainsOn, basisPct, includeInvestIncome, shockYear, shockPct };
         }
 
         function runProjection(inp) {
@@ -1874,8 +2010,10 @@
                 const marginalRate = getMarginalBracketRate(Math.max(0, taxableIncome - realizedGain - qualDiv), effectiveFilingStatus, curBracketsMFJ, curBracketsSingle);
 
                 const appliedCashGrowth = returnCash;
-                const appliedPreRetGrowth = returnPre;
-                const appliedPostRetGrowth = returnPost;
+                // Optional random market path (Risk tab): z-score for this year shifts the risky-asset return; cash and inflation stay fixed
+                const zShift = (inp.zpath ? (inp.volatility || 0) * (inp.zpath[yr - 1] || 0) : 0);
+                const appliedPreRetGrowth = Math.max(-0.95, returnPre + zShift);
+                const appliedPostRetGrowth = Math.max(-0.95, returnPost + zShift);
 
                 const surplusSaved = rmdSurplus + incomeSurplus, toBrokerage = rmdSaveTo === 'brokerage', toCash = rmdSaveTo === 'cash';
                 let endCash = Math.max(0, (balCash + (isWorking ? yrContribCash : 0) + (toCash ? surplusSaved : 0) - wdCash) * (1 + appliedCashGrowth));
@@ -2111,13 +2249,14 @@
         const TAB_ON = 'px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition border-indigo-600 text-indigo-700', TAB_OFF = 'px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition border-transparent text-slate-500 hover:text-slate-800';
         function showTab(name) {
             currentTab = name;
-            ['overview', 'cashflow', 'roth', 'ss', 'whatif', 'scenarios'].forEach(n => {
+            ['overview', 'cashflow', 'roth', 'ss', 'risk', 'whatif', 'scenarios'].forEach(n => {
                 document.getElementById('tab-' + n).classList.toggle('hidden', n !== name);
                 const b = document.querySelector(`[data-tab="${n}"]`); b.className = 'tab-btn ' + (n === name ? TAB_ON : TAB_OFF); b.setAttribute('aria-selected', n === name ? 'true' : 'false');
             });
             const mainEl = document.querySelector('main'), bar = document.getElementById('tab-bar');
             if (mainEl.scrollTop > bar.offsetTop) mainEl.scrollTop = bar.offsetTop;   // keep the tab bar in view after switching
             if (name === 'ss') renderSSAnalysis();
+            if (name === 'risk') { if (!document.getElementById('risk-pct').textContent || lastRiskKey !== JSON.stringify(readInputs())) document.getElementById('risk-sub').textContent = 'Running simulations...'; setTimeout(renderRisk, 30); }
             if (name === 'whatif') renderSensitivity();
             if (name === 'scenarios') refreshComparison();
             window.dispatchEvent(new Event('resize'));
@@ -2240,10 +2379,16 @@ ${imgT ? `<img src="${imgT}" alt="Annual tax and IRMAA">` : ''}
 <h2>5. Roth conversion analysis</h2>
 ${rothReportHTML()}
 
-<h2>6. Sensitivity analysis</h2>
+<h2>6. Social Security claiming analysis</h2>
+${ssReportHTML()}
+
+<h2>7. Plan success probability</h2>
+${riskReportHTML()}
+
+<h2>8. Sensitivity analysis</h2>
 ${sensReportHTML()}
 
-<h2>7. Tax law used (2026 tax year)</h2>
+<h2>9. Tax law used (2026 tax year)</h2>
 <div class="two"><div>
 ${kv([['Standard deduction: MFJ / Single', `${fmtCurr(P.stdDeduction.MFJ)} / ${fmtCurr(P.stdDeduction.Single)}`], ['Age 65+ add-on: MFJ (each) / Single', `${fmtCurr(P.stdDeduction.add65MFJ)} / ${fmtCurr(P.stdDeduction.add65Single)}`], ['Senior deduction (through ' + P.seniorDed.endYear + ')', `${fmtCurr(P.seniorDed.amount)} per person, phases out above ${fmtCurr(P.seniorDed.phaseStart.MFJ)} / ${fmtCurr(P.seniorDed.phaseStart.Single)} MAGI`], ['0% capital gains up to: MFJ / Single', `${fmtCurr(P.cgThresholds.MFJ.z)} / ${fmtCurr(P.cgThresholds.Single.z)}`]])}
 </div><div>
@@ -2251,26 +2396,26 @@ ${kv([['Standard deduction: MFJ / Single', `${fmtCurr(P.stdDeduction.MFJ)} / ${f
 </div></div>
 <table style="margin-top:8px"><thead><tr><th>IRMAA tier</th><th>MFJ MAGI</th><th>Single MAGI</th><th>Annual surcharge per person</th></tr></thead><tbody>${irmaaRows}</tbody></table>
 
-<h2>8. Notes and limitations</h2>
+<h2>10. Notes and limitations</h2>
 <ul class="note">
 <li>This report covers federal income tax only. Lifetime tax counts retirement withdrawals and Roth conversions; tax on pre-retirement earnings and state income taxes are not included and may add to total taxes depending on where you live.</li>
 <li>After-tax ending wealth taxes only the leftover IRA at the heirs' rate; brokerage receives a stepped-up basis at death, and Roth and cash are tax-free.</li>
 <li>Cash interest is taxed at ordinary rates. Qualified dividends (a 2% brokerage yield, reinvested and added to cost basis) and gains on brokerage sales, using the cost basis entered, are taxed at 0/15/20% stacked on top of ordinary income (0% when taxable income is below the threshold), plus the 3.8% NIIT.</li>
 <li>Inflation/COLA of ${rPct(inp.inflation)} is applied to the spending goal, Social Security and pension COLA, tax brackets, standard deductions, capital gains and IRMAA thresholds (IRMAA surcharges grow 1 point faster). Social Security tax thresholds, NIIT thresholds and the senior deduction are not inflated.</li>
-<li>Returns and inflation are constant assumptions in the base projection; actual results will vary. The sensitivity section shows how results change under other assumptions, including a market drop at retirement, but it is not a probability forecast.</li>
+<li>Returns and inflation are constant assumptions in the base projection; actual results will vary. Section 7 shows how often the plan stays funded across 1,000 simulated markets, and the sensitivity section shows how results change under other assumptions, including a market drop at retirement. Neither is a forecast.</li>
 <li>Rules follow IRS Rev. Proc. 2025-32 and the 2025 tax act. The $6,000 senior deduction applies only to tax years 2025 through 2028 and is not applied from 2029; other future law changes are not anticipated. Required minimum distributions follow SECURE 2.0 (start age 73, or 75 for those born in 1960 or later).</li>
 <li>Simplifications: IRMAA uses income from two years earlier (current-year income as a proxy for the first two years); ${mfj ? 'a deceased spouse is assumed to have claimed Social Security at the claim age; ' : ''}early-withdrawal penalties, the Roth 5-year rule, ACA subsidies and itemized deductions are not modeled.</li>
 </ul>
 <div class="rpt-closing"><b>Prepared by ${BRAND.legal}</b> &middot; ${BRAND.contact}<br>Retirement Cash Flow &amp; Tax Engine v${APP_VERSION} &middot; &copy; ${new Date().getFullYear()} ${BRAND.legal}. All rights reserved. Educational projection, not tax, legal or investment advice; consult a qualified professional before acting.</div>
 
 ${preRows.length ? `<div class="rpt-wide rpt-break">
-<h2>9. Appendix A: pre-retirement years (whole dollars)</h2>
+<h2>11. Appendix A: pre-retirement years (whole dollars)</h2>
 <table class="grid-year" style="--rowh:${rowHp}px;--fs:${fszp}px"><thead><tr><th colspan="${mfj ? 3 : 2}">Timeline</th><th colspan="3">Pre-retirement activity</th><th colspan="4">Conversion tax paid from</th><th colspan="5">Year-end balances</th></tr><tr><th>Yr</th><th>${mfj ? 'You' : 'Age'}</th>${mfj ? '<th>Spouse</th>' : ''}<th>Contributions</th><th>Roth conv</th><th>Conv tax</th><th>Cash</th><th>Brokerage</th><th>IRA</th><th>Roth</th><th>End cash</th><th>End brokerage</th><th>End tax-deferred</th><th>End Roth</th><th>Total assets</th></tr></thead><tbody>${preRowsHtml}</tbody><tfoot><tr><td colspan="${mfj ? 3 : 2}"><b>Total</b></td><td><b>${rD(pre.contrib)}</b></td><td><b>${rD(pre.conv)}</b></td><td><b>${rD(pre.convTax)}</b></td><td><b>${rD(pre.paidCash)}</b></td><td><b>${rD(pre.paidBrokerage)}</b></td><td><b>${rD(pre.paidIra)}</b></td><td><b>${rD(pre.paidRoth)}</b></td><td colspan="5"></td></tr></tfoot></table>
 <p class="note">Contributions, taxes and withdrawals roll into each account before retirement. Tax on pre-retirement earnings is not modeled; only tax caused by Roth conversions is counted, and it is paid from the accounts shown (cash first, then brokerage; IRA and Roth only if needed).</p>
 </div>` : ''}
 
 <div class="rpt-wide rpt-break">
-<h2>${preRows.length ? '10. Appendix B' : '9. Appendix'}: Retirement Cash Flow & Tax Ledger (Year-by-Year, whole dollars)</h2>
+<h2>${preRows.length ? '12. Appendix B' : '11. Appendix'}: Retirement Cash Flow & Tax Ledger (Year-by-Year, whole dollars)</h2>
 <table class="grid-year" style="--rowh:${rowH}px;--fs:${fsz}px"><thead><tr><th>Yr</th><th>${mfj ? 'You' : 'Age'}</th>${mfj ? '<th>Spouse</th>' : ''}<th>Income</th><th>RMD</th><th>Roth conv</th><th>Withdrawals</th><th>AGI</th><th>Fed tax</th><th>IRMAA</th><th>Eff. rate</th><th>Cash</th><th>Brokerage</th><th>Tax-deferred</th><th>Roth</th><th>Total assets</th></tr></thead><tbody>${yrRows}</tbody></table>
 <p class="note">Year 1 is the first retirement year. Income = Social Security + pension. Withdrawals = cash + brokerage + tax-deferred + Roth withdrawals (including required distributions and Roth conversions moved out of the IRA). Balances are year-end.</p>
 </div>
@@ -2352,6 +2497,47 @@ ${preRows.length ? `<div class="rpt-wide rpt-break">
                 const url = cv.toDataURL('image/png'); ch.destroy(); return url || '';
             } catch (e) { return ''; }
         }
+        function riskChartImage(a) {
+            if (typeof Chart === 'undefined') return '';
+            try {
+                const cv = document.createElement('canvas'); cv.width = 900; cv.height = 340;
+                const ln = (i, label, color, fill, wd) => ({ label, data: a.fan.map(f => f.p[i]), borderColor: color, backgroundColor: fill || 'transparent', fill: fill ? '-1' : false, borderWidth: wd, pointRadius: 0, tension: 0.2 });
+                const ch = new Chart(cv, { type: 'line', data: { labels: a.fan.map(f => `${f.age}`), datasets: [ln(0, '10th percentile', 'rgba(99,102,241,0.4)', null, 1), ln(1, '25th', 'rgba(99,102,241,0.5)', 'rgba(99,102,241,0.10)', 1), ln(2, 'Median', '#4f46e5', 'rgba(99,102,241,0.20)', 2.5), ln(3, '75th', 'rgba(99,102,241,0.5)', 'rgba(99,102,241,0.20)', 1), ln(4, '90th percentile', 'rgba(99,102,241,0.4)', 'rgba(99,102,241,0.10)', 1),
+                    { label: 'Single-path projection', data: a.fan.map(f => f.det), borderColor: '#0f172a', borderDash: [6, 4], borderWidth: 1.5, pointRadius: 0, fill: false, tension: 0.2 }] },
+                    options: { animation: false, responsive: false, devicePixelRatio: 2, plugins: { title: { display: true, text: 'Total assets across simulated markets (x-axis: your age)' }, legend: { position: 'bottom' } }, scales: { y: { ticks: { callback: v => '$' + (v / 1e6).toFixed(1) + 'M' } } } } });
+                const url = cv.toDataURL('image/png'); ch.destroy(); return url || '';
+            } catch (e) { return ''; }
+        }
+        function riskReportHTML() {
+            const a = riskAnalysis(), pc = Math.round(a.success * 100), band = a.success >= 0.9 ? 'Strong' : a.success >= 0.75 ? 'Moderate' : a.success >= 0.6 ? 'At risk' : 'High risk', col = a.success >= 0.9 ? '#059669' : a.success >= 0.75 ? '#d97706' : a.success >= 0.6 ? '#ea580c' : '#e11d48', img = riskChartImage(a), money = fmtCurr;
+            const lev = a.levers.map(l => `<tr><td>${l.label}</td><td>${Math.round(l.success * 100)}%</td><td>${Math.abs(l.delta) < 0.0005 ? '-' : (l.delta > 0 ? '+' : '') + Math.round(l.delta * 100) + ' pts'}</td></tr>`).join('');
+            return `<p><b style="font-size:15px;color:${col}">${pc}% &middot; ${band}</b><br>${a.funded.toLocaleString()} of ${a.n.toLocaleString()} simulated market paths stay fully funded through age ${a.base.p1TargetAge}. Average returns ${(a.base.returnPre * 100).toFixed(1)}% before and ${(a.base.returnPost * 100).toFixed(1)}% after retirement, with ${(a.base.volatility * 100).toFixed(0)}% yearly volatility. The single-path projection is ${a.detFunded ? 'fully funded' : 'not fully funded'}.</p>
+${img ? `<img src="${img}" alt="Simulated asset paths">` : ''}
+<table><thead><tr><th>Ending outcome (future dollars)</th><th>Total assets</th><th>After-tax ending</th></tr></thead><tbody>${a.outcomes.map(o => `<tr><td>${Math.round(o.q * 100)}th percentile${o.q === 0.1 ? ' (poor markets)' : o.q === 0.5 ? ' (typical)' : o.q === 0.9 ? ' (strong markets)' : ''}</td><td>${money(o.assets)}</td><td>${money(o.after)}</td></tr>`).join('')}<tr><td>Single-path projection (no volatility)</td><td>${money(a.detEnd)}</td><td>${money(a.detAfter)}</td></tr></tbody></table>
+<p class="note">${a.fails > 0 && a.depMedian ? `In the ${a.fails.toLocaleString()} paths that fail, assets run out around age ${Math.round(a.depMedian)} (one in ten failures runs out by age ${Math.round(a.depEarly)}).` : (a.fails > 0 ? `${a.fails.toLocaleString()} paths fall short of the spending goal in at least one year.` : 'No simulated path runs short of the spending goal.')}</p>
+<table><thead><tr><th>${a.above ? 'Spending headroom (staying at or above ' + Math.round(a.target * 100) + '%)' : 'What would improve the odds (target ' + Math.round(a.target * 100) + '%)'}</th><th>Success</th><th>Change</th></tr></thead><tbody><tr><td>Current plan</td><td>${Math.round(a.levelBase * 100)}%</td><td>-</td></tr>${lev}</tbody></table>
+<p class="note">Lever rows are quick estimates from the first ${a.leverN.toLocaleString()} paths, the same market paths for every row. Each path draws a random yearly return around the growth inputs (normal, independent from year to year) and recalculates taxes, RMDs, Social Security, IRMAA and withdrawals. Cash earns its fixed rate and inflation stays constant. Funded means spending is met every year through the plan-to age. The typical outcome is lower than the single-path projection because volatility reduces compound growth. The stress-test input is ignored.</p>`;
+        }
+        function ssReportHTML() {
+            const a = ssAnalysis(), money = fmtCurr;
+            if (a.none) return '<p class="note">No Social Security benefit is entered, so claiming ages are not analyzed.</p>';
+            const txt = c => a.mfj ? (a.has2 ? `you at ${c.a1}, spouse at ${c.a2}` : `you at ${c.a1}`) : `age ${c.a1}`, same = a.rec === a.cur;
+            const tag = c => `${c === a.rec ? ' (recommended)' : ''}${c === a.cur ? ' (current)' : ''}${c.funded ? '' : ' (not funded)'}`;
+            const d = v => Math.abs(v) < 0.5 ? '-' : `<span style="color:${v > 0 ? '#059669' : '#e11d48'}">${v > 0 ? '+' : '-'}${money(Math.abs(v))}</span>`;
+            let html = `<p><b>${same ? 'Current claiming ages are fine' : 'Recommendation: ' + txt(a.rec)}</b> &middot; current selection: ${txt(a.cur)}${same ? '' : ` &middot; adds ${money(a.rec.m.afterTax - a.cur.m.afterTax)} of After-Tax Ending Wealth`}</p><ul class="narr">${a.reasons.map(t => `<li>${rEsc(t)}</li>`).join('')}</ul>`;
+            if (a.mfj && a.has1 && a.has2) {
+                const vals = a.combos.map(c => c.m.afterTax), lo = Math.min(...vals), hi = Math.max(...vals);
+                html += `<table><thead><tr><th>After-tax ending ($M): you \\ spouse</th>${SS_AGES.map(x => `<th>${x}</th>`).join('')}</tr></thead><tbody>${SS_AGES.map(r => `<tr><td><b>${r}</b></td>${SS_AGES.map(cg => { const c = a.combos.find(x => x.a1 === r && x.a2 === cg), ratio = hi > lo ? (c.m.afterTax - lo) / (hi - lo) : 1; return `<td style="background:rgba(16,185,129,${(0.06 + 0.5 * ratio).toFixed(2)});${c === a.rec ? 'outline:2px solid #059669;font-weight:700;' : ''}${c === a.cur ? 'outline:2px solid #6366f1;' : ''}${c.funded ? '' : 'text-decoration:line-through;color:#94a3b8;'}">${(c.m.afterTax / 1e6).toFixed(2)}</td>`; }).join('')}</tr>`).join('')}</tbody></table>
+<p class="note">Green outline = recommended, blue outline = current ages. Darker = more after-tax wealth.</p>`;
+                const top = a.ranked.slice(0, 6); if (!top.includes(a.cur)) top.push(a.cur);
+                html += `<table><thead><tr><th>Top combinations</th><th>Your benefit</th><th>Spouse benefit</th><th>Lifetime tax</th><th>After-tax ending</th><th>vs. current</th></tr></thead><tbody>${top.map(c => `<tr${c === a.rec ? ' style="background:#ecfdf5;font-weight:700"' : ''}><td>${txt(c)}${tag(c)}</td><td>${money(c.inp.p1SSAmt)}</td><td>${money(c.inp.p2SSAmt)}</td><td>${money(c.m.tax)}</td><td>${money(c.m.afterTax)}</td><td>${c === a.cur ? '-' : d(c.m.afterTax - a.cur.m.afterTax)}</td></tr>`).join('')}</tbody></table>`;
+            } else {
+                const pers = a.has1 ? 'a1' : 'a2';
+                html += `<table><thead><tr><th>Claim at</th><th>First-year benefit</th><th>Lifetime tax</th><th>IRMAA</th><th>After-tax ending</th><th>vs. current</th></tr></thead><tbody>${a.combos.map(c => `<tr${c === a.rec ? ' style="background:#ecfdf5;font-weight:700"' : ''}><td>Age ${c[pers]}${tag(c)}</td><td>${money(a.has1 ? c.inp.p1SSAmt : c.inp.p2SSAmt)}</td><td>${money(c.m.tax)}</td><td>${money(c.m.irmaa)}</td><td>${money(c.m.afterTax)}</td><td>${c === a.cur ? '-' : d(c.m.afterTax - a.cur.m.afterTax)}</td></tr>`).join('')}</tbody></table>`;
+            }
+            return html + '<p class="note">Each claiming age is run on the same inputs and ranked by After-Tax Ending Wealth. Benefits scale from the entered amount (about 70% of the age-67 amount at 62 up to 124% at 70, full retirement age assumed 67) plus the COLA earned while waiting.</p>';
+        }
+
         function rothReportHTML() {
             const a = rothAnalysis(), none = a.rows[0], cur = a.rows.find(r => r.current) || none;
             const head = a.noDeferred ? 'No Roth conversions apply' : (a.rec.key === 'none' ? 'No conversions needed' : a.rec.label);
@@ -2398,6 +2584,85 @@ ${preRows.length ? `<div class="rpt-wide rpt-break">
         }
 
 
+
+
+        // ================= Plan success probability (Monte Carlo) =================
+        const RISK_SEED = 20260101, RISK_N = 1000, RISK_LEVER_N = 500, RISK_TARGET = 0.90;
+        function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+        function makeZPaths(n, years, seed) {
+            const rng = mulberry32(seed), out = [];
+            for (let i = 0; i < n; i++) {
+                const p = new Array(years);
+                for (let k = 0; k < years; k += 2) {
+                    const u1 = Math.max(rng(), 1e-12), u2 = rng(), r = Math.sqrt(-2 * Math.log(u1));
+                    p[k] = r * Math.cos(2 * Math.PI * u2); if (k + 1 < years) p[k + 1] = r * Math.sin(2 * Math.PI * u2);
+                }
+                out.push(p);
+            }
+            return out;
+        }
+        function pctile(sorted, p) { if (!sorted.length) return 0; const idx = (sorted.length - 1) * p, lo = Math.floor(idx), hi = Math.ceil(idx); return sorted[lo] + (sorted[hi] - sorted[lo]) * (idx - lo); }
+        function mcRun(base, paths, over) {
+            const res = { n: paths.length, funded: 0, endAssets: [], endAfter: [], series: [], deplAges: [] };
+            for (const z of paths) {
+                const out = runProjection(Object.assign({}, base, over || {}, { shockYear: 0, zpath: z })), rs = out.results, last = rs[rs.length - 1], dep = rs.find(r => r.endTotalAssets < 1 && r.spendGoal > 0);
+                if (out.totalDeficitYears === 0 && !dep) res.funded++; else if (dep) res.deplAges.push(dep.p1Age);
+                res.endAssets.push(last.endTotalAssets); res.endAfter.push(last.endTotalAssets - last.balTrad * out.heirTaxRate); res.series.push(rs.map(r => r.endTotalAssets));
+            }
+            res.success = res.funded / res.n; return res;
+        }
+        function riskAnalysis(n = RISK_N) {
+            const base = readInputs(), paths = makeZPaths(n, 110, RISK_SEED), mfj = base.filingStatus === 'MFJ';
+            const det = runProjection(Object.assign({}, base, { shockYear: 0 })), detLast = det.results[det.results.length - 1];
+            const mc = mcRun(base, paths), srt = a => a.slice().sort((x, y) => x - y), P = [0.1, 0.25, 0.5, 0.75, 0.9];
+            const eA = srt(mc.endAssets), eT = srt(mc.endAfter);
+            const fan = det.results.map((r, i) => { const col = srt(mc.series.map(s => s[i])); return { age: r.p1Age, p: P.map(q => pctile(col, q)), det: r.endTotalAssets }; });
+            const M = Math.min(RISK_LEVER_N, n), sub = paths.slice(0, M), b = mcRun(base, sub), above = mc.success >= RISK_TARGET, levers = [];
+            const add = (label, over) => { const r = mcRun(base, sub, over); levers.push({ label, success: r.success, delta: r.success - b.success, over }); };
+            if (!above) {
+                [0.05, 0.10, 0.15, 0.20].forEach(x => add(`Spend ${Math.round(x * 100)}% less (${fmtCurr(base.baseSpendingGoal * (1 - x))}/yr)`, { baseSpendingGoal: base.baseSpendingGoal * (1 - x) }));
+                [1, 2].forEach(k => { if (base.p1RetireAge + k < base.p1TargetAge) add(`Retire ${k} year${k > 1 ? 's' : ''} later (age ${base.p1RetireAge + k})`, { p1RetireAge: base.p1RetireAge + k }); });
+                const o = {}, has1 = base.p1SSAmt > 0 && base.p1SSAge < 70, has2 = mfj && base.p2SSAmt > 0 && base.p2SSAge < 70;
+                if (has1) { o.p1SSAge = 70; o.p1SSAmt = ssAmountAt(base.p1SSAmt, base.p1SSAge, 70, base.inflation); }
+                if (has2) { o.p2SSAge = 70; o.p2SSAmt = ssAmountAt(base.p2SSAmt, base.p2SSAge, 70, base.inflation); }
+                if (has1 || has2) add(`Claim Social Security at 70${has1 && has2 ? ' (both)' : ''}`, o);
+            } else {
+                [0.05, 0.10, 0.15, 0.20].forEach(x => add(`Spend ${Math.round(x * 100)}% more (${fmtCurr(base.baseSpendingGoal * (1 + x))}/yr)`, { baseSpendingGoal: base.baseSpendingGoal * (1 + x) }));
+            }
+            const dep = mc.deplAges.slice().sort((x, y) => x - y);
+            return { base, n, success: mc.success, funded: mc.funded, fails: n - mc.funded, fan, outcomes: P.map((q, i) => ({ q, assets: pctile(eA, q), after: pctile(eT, q) })), detEnd: detLast.endTotalAssets, detAfter: detLast.endTotalAssets - detLast.balTrad * det.heirTaxRate, detFunded: det.totalDeficitYears === 0,
+                levers, levelBase: b.success, above, target: RISK_TARGET, leverN: M, depMedian: dep.length ? pctile(dep, 0.5) : null, depEarly: dep.length ? pctile(dep, 0.1) : null, mfj };
+        }
+        let lastRiskKey = null;
+        function renderRisk() {
+            const base = readInputs(), key = JSON.stringify(base);
+            if (key === lastRiskKey && document.getElementById('risk-pct').textContent) return;
+            const a = riskAnalysis(), pc = Math.round(a.success * 100);
+            lastRiskKey = key;
+            const tone = a.success >= 0.9 ? ['emerald', 'Strong'] : a.success >= 0.75 ? ['amber', 'Moderate'] : a.success >= 0.6 ? ['orange', 'At risk'] : ['rose', 'High risk'];
+            document.getElementById('risk-badge').textContent = `${pc}% · ${tone[1]}`;
+            document.getElementById('risk-badge').className = `text-[11px] px-2.5 py-1 rounded-full font-semibold bg-${tone[0]}-100 text-${tone[0]}-800`;
+            const box = document.getElementById('risk-headline'); box.className = `rounded-xl border-2 px-5 py-4 flex items-center gap-5 flex-wrap bg-${tone[0]}-50 border-${tone[0]}-300`;
+            document.getElementById('risk-pct').textContent = `${pc}%`; document.getElementById('risk-pct').className = `text-4xl font-bold text-${tone[0]}-800`;
+            document.getElementById('risk-label').textContent = tone[1];
+            document.getElementById('risk-sub').textContent = sgl(`${a.funded.toLocaleString()} of ${a.n.toLocaleString()} simulated market paths stay fully funded through age ${a.base.p1TargetAge}. Average returns ${(a.base.returnPre * 100).toFixed(1)}% before and ${(a.base.returnPost * 100).toFixed(1)}% after retirement, with ${(a.base.volatility * 100).toFixed(0)}% yearly volatility.`);
+            const money = fmtCurr;
+            document.getElementById('risk-outcomes-body').innerHTML = a.outcomes.map(o => `<tr class="border-b border-slate-100 ${o.q === 0.5 ? 'bg-indigo-50/50 font-semibold' : ''}"><td class="py-1.5 px-2 text-left">${Math.round(o.q * 100)}th percentile${o.q === 0.1 ? ' (poor markets)' : o.q === 0.5 ? ' (typical)' : o.q === 0.9 ? ' (strong markets)' : ''}</td><td class="py-1.5 px-2">${money(o.assets)}</td><td class="py-1.5 px-2 text-slate-900">${money(o.after)}</td></tr>`).join('')
+                + `<tr class="border-b border-slate-100 text-slate-500"><td class="py-1.5 px-2 text-left">Single-path projection (no volatility)</td><td class="py-1.5 px-2">${money(a.detEnd)}</td><td class="py-1.5 px-2">${money(a.detAfter)}</td></tr>`;
+            document.getElementById('risk-failnote').textContent = a.fails > 0 && a.depMedian ? sgl(`In the ${a.fails.toLocaleString()} paths that fail, assets run out around age ${Math.round(a.depMedian)} (one in ten failures runs out by age ${Math.round(a.depEarly)}).`) : (a.fails > 0 ? `${a.fails.toLocaleString()} paths fall short of the spending goal in at least one year.` : 'No simulated path runs short of the spending goal.');
+            const reach = a.above ? null : a.levers.find(l => l.success >= a.target), keep = a.above ? a.levers.filter(l => l.success >= a.target).pop() : null;
+            document.getElementById('risk-levers-title').textContent = a.above ? `Spending headroom (staying at or above ${Math.round(a.target * 100)}%)` : `What would improve the odds (target ${Math.round(a.target * 100)}%)`;
+            document.getElementById('risk-levers-body').innerHTML = `<tr class="border-b border-slate-100 text-slate-500"><td class="py-1.5 px-2 text-left">Current plan</td><td class="py-1.5 px-2">${Math.round(a.levelBase * 100)}%</td><td class="py-1.5 px-2">-</td></tr>` + a.levers.map(l => `<tr class="border-b border-slate-100 ${l === reach || l === keep ? 'bg-emerald-50 font-semibold' : ''}"><td class="py-1.5 px-2 text-left">${l.label}${l === reach ? ' <span class="ml-1 text-[10px] bg-emerald-600 text-white px-1.5 py-0.5 rounded-full">First to reach target</span>' : ''}${l === keep ? ' <span class="ml-1 text-[10px] bg-emerald-600 text-white px-1.5 py-0.5 rounded-full">Largest still at target</span>' : ''}</td><td class="py-1.5 px-2">${Math.round(l.success * 100)}%</td><td class="py-1.5 px-2 font-semibold ${l.delta > 0.0005 ? 'text-emerald-600' : l.delta < -0.0005 ? 'text-rose-600' : 'text-slate-400'}">${Math.abs(l.delta) < 0.0005 ? '-' : (l.delta > 0 ? '+' : '') + Math.round(l.delta * 100) + ' pts'}</td></tr>`).join('');
+            document.getElementById('risk-levers-note').textContent = `Quick estimates from the first ${a.leverN.toLocaleString()} paths, the same market paths for every row so the comparison is fair.`;
+            if (typeof Chart !== 'undefined') {
+                if (window._riskChart) window._riskChart.destroy();
+                const labels = a.fan.map(f => `${f.age}`), line = (i, label, color, fill, w) => ({ label, data: a.fan.map(f => f.p[i]), borderColor: color, backgroundColor: fill, fill: fill ? '-1' : false, borderWidth: w, pointRadius: 0, tension: 0.2 });
+                window._riskChart = new Chart(document.getElementById('risk-chart'), { type: 'line', data: { labels, datasets: [
+                    line(0, '10th percentile', 'rgba(99,102,241,0.35)', null, 1), line(1, '25th', 'rgba(99,102,241,0.45)', 'rgba(99,102,241,0.10)', 1), line(2, 'Median', '#4f46e5', 'rgba(99,102,241,0.20)', 2.5), line(3, '75th', 'rgba(99,102,241,0.45)', 'rgba(99,102,241,0.20)', 1), line(4, '90th percentile', 'rgba(99,102,241,0.35)', 'rgba(99,102,241,0.10)', 1),
+                    { label: 'Single-path projection', data: a.fan.map(f => f.det), borderColor: '#0f172a', borderDash: [6, 4], borderWidth: 1.5, pointRadius: 0, fill: false, tension: 0.2 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Total assets across simulated markets (x-axis: your age)' } }, scales: { y: { ticks: { callback: v => '$' + (v / 1e6).toFixed(1) + 'M' } } } } });
+            }
+        }
 
         // ================= Social Security claiming analysis: every claiming age, recommend one, explain why =================
         const SS_AGES = [62, 63, 64, 65, 66, 67, 68, 69, 70];
@@ -3000,7 +3265,9 @@ ${preRows.length ? `<div class="rpt-wide rpt-break">
             // editing any input returns to Overview, where the key figures and funding status react
             ['input', 'change'].forEach(ev => document.getElementById('panel-content-body').addEventListener(ev, () => { if (currentTab !== 'overview' && !(currentTab === 'scenarios' && scnBaseline)) showTab('overview'); }, true));   // while comparing scenarios, edits stay on that tab
             // windows: Assumptions, Tax parameters, Report, Spend calculator close with Esc or a click on the backdrop
-            const modalIds = ['modal-assumptions', 'modal-tax-params', 'modal-report', 'modal-spend-calc'];
+            const modalIds = ['modal-assumptions', 'modal-risk-info', 'modal-tax-params', 'modal-report', 'modal-spend-calc'];
+            document.getElementById('btn-risk-info').addEventListener('click', () => document.getElementById('modal-risk-info').classList.remove('hidden'));
+            document.getElementById('btn-close-risk-info').addEventListener('click', () => document.getElementById('modal-risk-info').classList.add('hidden'));
             document.getElementById('btn-assumptions').addEventListener('click', () => document.getElementById('modal-assumptions').classList.remove('hidden'));
             document.getElementById('btn-close-assumptions').addEventListener('click', () => document.getElementById('modal-assumptions').classList.add('hidden'));
             document.addEventListener('keydown', (e) => { if (e.key === 'Escape') modalIds.forEach(id => document.getElementById(id).classList.add('hidden')); });

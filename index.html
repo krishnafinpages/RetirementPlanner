@@ -34,6 +34,9 @@
         .pair-grid > :nth-child(4n+3) { margin-left: 18px; }
         .pair-grid input, .pair-grid select { width: 100% !important; min-width: 0; }
         .pair-grid.pg-sel { grid-template-columns: max-content 6rem max-content 6rem; }
+        .pair-grid.pg-state { grid-template-columns: max-content 3.5rem max-content 5.5rem; }
+        body:not(.has-state) .state-col { display: none; }
+        body:not(.has-qcd) .qcd-col { display: none; }
         .pair-grid.pg-sal { grid-template-columns: max-content 5.5rem max-content 3.5rem; }
         /* Single filer: spouse inputs/columns are removed from view and the P1/P2 grids drop to two columns */
         body.is-single .p2-col, body.is-single .sp-col { display: none !important; }
@@ -358,6 +361,14 @@
                         
                         
                         
+                        <span class="block font-semibold text-slate-200 text-[11px] pt-1">State income tax</span>
+                        <div class="pair-grid pg-state">
+                            <div class="contents"><label class="font-semibold text-slate-300 whitespace-nowrap" title="Flat effective rate on state-taxable income. Leave at 0 to ignore state tax.">State rate (%)</label><input type="number" id="inp-state-rate" value="0" step="0.1" min="0" max="15" class="w-14 bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                            <div class="contents"><label class="font-semibold text-slate-300 whitespace-nowrap" title="State standard deduction or exemption per year, indexed with Inflation/COLA">Deduction ($)</label><input type="number" id="inp-state-deduction" value="0" step="500" min="0" class="w-14 bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                        </div>
+                        <div class="flex items-center space-x-2"><input type="checkbox" id="inp-state-exempt-ss" checked class="rounded-lg border-slate-700 bg-slate-800 text-indigo-600 focus:ring-indigo-500 h-4 w-4"><label for="inp-state-exempt-ss" class="font-semibold text-slate-300 text-xs">State does not tax Social Security</label></div>
+                        <div class="flex items-center space-x-2"><input type="checkbox" id="inp-state-exempt-ret" class="rounded-lg border-slate-700 bg-slate-800 text-indigo-600 focus:ring-indigo-500 h-4 w-4"><label for="inp-state-exempt-ret" class="font-semibold text-slate-300 text-xs">State exempts IRA, pension &amp; Roth-conversion income</label></div>
+                        <p class="text-[11px] text-slate-500">A flat rate applied to interest, dividends, gains and, unless exempt, retirement income. Most states tax little or none of retirement income; check yours.</p>
                         <span class="block font-semibold text-slate-200 text-[11px] pt-1">Stress test</span>
                         <div class="pair-grid pg-sel">
                             <div class="contents"><label class="font-semibold text-slate-300 whitespace-nowrap">Shock Year</label><select id="inp-shock-year" class="w-24 bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-1.5 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"><option value="0" selected class="bg-slate-800 text-slate-100">None</option><option value="1" class="bg-slate-800 text-slate-100">Yr 1 Retire</option><option value="2" class="bg-slate-800 text-slate-100">Yr 2 Retire</option><option value="3" class="bg-slate-800 text-slate-100">Yr 3 Retire</option></select></div><div class="contents"><label class="font-semibold text-slate-300 whitespace-nowrap">Shock Drop</label><select id="inp-shock-pct" class="w-24 bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-1.5 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"><option value="15" class="bg-slate-800 text-slate-100">-15% Market</option><option value="25" selected class="bg-slate-800 text-slate-100">-25% Market</option><option value="35" class="bg-slate-800 text-slate-100">-35% Market</option></select></div>
@@ -378,6 +389,13 @@
                         <div class="flex items-center gap-1.5"><label title="Estimated tax your heirs pay on the leftover tax-deferred balance. Roth and cash are treated as tax-free and brokerage as stepped-up." class="font-semibold text-slate-300 whitespace-nowrap">Heirs' tax rate on leftover IRA (%)</label><input type="number" id="inp-heir-tax-rate" value="24" step="1" min="0" max="50" class="w-14 bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-2 focus:ring-indigo-500"></div>
                         <p id="legacy-excess-note" class="text-[11px] leading-snug text-indigo-300"></p>
                         <p class="text-[11px] leading-snug text-slate-500">Brokerage and cash pass to heirs tax-free (stepped-up basis at death) and Roth is tax-free. Only the leftover IRA is taxed at the heirs' rate.</p>
+                        <span class="block font-semibold text-slate-200 text-[11px] pt-2">Charitable giving</span>
+                        <div class="flex items-center gap-1.5" title="Qualified charitable distributions go straight from your IRA to a charity. They are not taxable, count toward your RMD, and are allowed from age 70&frac12;."><label class="font-semibold text-slate-300 whitespace-nowrap">QCDs from your IRA</label><select id="inp-qcd-mode" class="w-32 bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-1.5 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"><option value="none" selected class="bg-slate-800 text-slate-100">Off</option><option value="fixed" class="bg-slate-800 text-slate-100">Fixed $ per year</option><option value="rmd" class="bg-slate-800 text-slate-100">% of RMD</option></select></div>
+                        <div id="qcd-fixed-row" class="hidden flex items-center gap-1.5" title="Amount in the dollars of the first QCD year; it grows with Inflation/COLA"><label class="font-semibold text-slate-300 whitespace-nowrap">QCD per year ($)</label><input type="number" id="inp-qcd-amount" value="10000" step="1000" min="0" class="w-20 bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                        <div id="qcd-pct-row" class="hidden flex items-center gap-1.5" title="Share of each year's required minimum distribution sent to charity"><label class="font-semibold text-slate-300 whitespace-nowrap">Share of RMD (%)</label><input type="number" id="inp-qcd-pct" value="100" step="5" min="0" max="100" class="w-14 bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                        <div id="qcd-age-row" class="hidden flex items-center gap-1.5" title="QCDs are allowed once you reach 70&frac12;; the model starts in the year you reach this age"><label class="font-semibold text-slate-300 whitespace-nowrap">Start at age</label><input type="number" id="inp-qcd-age" value="71" step="1" min="70" max="100" class="w-14 bg-slate-800 border border-slate-700 text-slate-100 rounded-lg px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                        <p id="qcd-hint" class="hidden text-[11px] leading-snug text-slate-500">Direct IRA-to-charity gifts: excluded from income, applied to your RMD first, limited to $111,000 per person in 2026 (indexed). Roth conversions leave enough IRA to fund them. The model uses your age and stops when you die.</p>
+                        <p id="qcd-status" class="hidden text-[11px] leading-snug font-semibold"></p>
                     </div>
                 </details>
 
@@ -420,6 +438,7 @@
                         <button type="button" role="tab" data-tab="cashflow" class="tab-btn px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition border-transparent text-slate-500 hover:text-slate-800" aria-selected="false">Cash Flow</button>
                         <button type="button" role="tab" data-tab="roth" class="tab-btn px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition border-transparent text-slate-500 hover:text-slate-800" aria-selected="false">Roth</button>
                         <button type="button" role="tab" data-tab="ss" class="tab-btn px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition border-transparent text-slate-500 hover:text-slate-800" aria-selected="false">Social Security</button>
+                        <button type="button" role="tab" data-tab="qcd" class="tab-btn px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition border-transparent text-slate-500 hover:text-slate-800" aria-selected="false">QCD</button>
                         <button type="button" role="tab" data-tab="risk" class="tab-btn px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition border-transparent text-slate-500 hover:text-slate-800" aria-selected="false">Risk</button>
                         <button type="button" role="tab" data-tab="whatif" class="tab-btn px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition border-transparent text-slate-500 hover:text-slate-800" aria-selected="false">What-if</button>
                         <button type="button" role="tab" data-tab="scenarios" class="tab-btn px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition border-transparent text-slate-500 hover:text-slate-800" aria-selected="false">Scenarios</button>
@@ -457,7 +476,7 @@
                     <div>
                         <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Lifetime Tax</p>
                         <p id="kpi-lifetime-tax" class="text-base lg:text-lg font-bold text-slate-900">$0</p>
-                        <p class="text-[11px] text-slate-400">Retirement + Roth conversions</p>
+                        <p id="kpi-tax-sub" class="text-[11px] text-slate-400">Retirement + Roth conversions</p>
                     </div>
                 </div>
 
@@ -468,6 +487,16 @@
                     <div>
                         <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Lifetime IRMAA</p>
                         <p id="kpi-lifetime-irmaa" class="text-base lg:text-lg font-bold text-slate-900">$0</p>
+                    </div>
+                </div>
+                <div id="kpi-qcd-card" class="hidden bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex items-center space-x-3.5 border-l-4 border-l-emerald-500">
+                    <div class="p-2.5 bg-emerald-50 border border-emerald-100 rounded-xl text-emerald-600 flex-none">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Charitable QCDs</p>
+                        <p id="kpi-qcd" class="text-base lg:text-lg font-bold text-slate-900">$0</p>
+                        <p id="kpi-qcd-sub" class="text-[11px] text-slate-400"></p>
                     </div>
                 </div>
             </section>
@@ -489,7 +518,7 @@
                     </div>
                     <div class="bg-indigo-50/60 p-3 rounded-xl border border-indigo-100 space-y-1">
                         <span class="block text-[11px] font-bold text-indigo-700 uppercase tracking-wider">Tax & Conversion Outlook</span>
-                        <p id="summary-tax-desc" class="font-medium text-slate-700">Lifetime federal income tax is projected from your inputs. State income tax is not included.</p>
+                        <p id="summary-tax-desc" class="font-medium text-slate-700">Lifetime tax is projected from your inputs.</p>
                     </div>
                     <div class="bg-indigo-50/60 p-3 rounded-xl border border-indigo-100 space-y-1">
                         <span class="block text-[11px] font-bold text-indigo-700 uppercase tracking-wider">Key Recommendation</span>
@@ -576,7 +605,7 @@
                                     <th colspan="2" class="py-2.5 px-3 text-center bg-slate-200 text-slate-900 font-bold tracking-wider uppercase border-r border-slate-300">Profile & Timeline</th>
                                     <th id="ledger-grp-income" colspan="6" class="py-2.5 px-3 text-center bg-indigo-100 text-indigo-950 font-bold tracking-wider uppercase border-r border-slate-300">Cash Flow & Incomes</th>
                                     <th colspan="5" class="py-2.5 px-3 text-center bg-emerald-100 text-emerald-950 font-bold tracking-wider uppercase border-r border-slate-300">Withdrawal Waterfall</th>
-                                    <th colspan="9" class="py-2.5 px-3 text-center bg-rose-100 text-rose-950 font-bold tracking-wider uppercase border-r border-slate-300">Tax Calculations</th>
+                                    <th id="ledger-grp-tax" colspan="9" class="py-2.5 px-3 text-center bg-rose-100 text-rose-950 font-bold tracking-wider uppercase border-r border-slate-300">Tax Calculations</th>
                                     <th colspan="5" class="py-2.5 px-3 text-center bg-amber-100 text-amber-950 font-bold tracking-wider uppercase">Ending Balances</th>
                                 </tr>
                                 <tr class="text-[11px]">
@@ -588,7 +617,8 @@
                                     <th class="py-2.5 px-3 min-w-[85px] sp-col">Spouse SS</th>
                                     <th class="totalss-th py-2.5 px-3 min-w-[85px]">Total SS</th>
                                     <th class="py-2.5 px-3 min-w-[85px]">Pension Inc</th>
-                                    <th class="py-2.5 px-3 min-w-[85px] border-r border-slate-300">RMD Amt</th>
+                                    <th class="py-2.5 px-3 min-w-[85px] border-r border-slate-300" title="Taxable RMD, after any QCDs">RMD Amt</th>
+                                    <th class="qcd-col py-2.5 px-3 min-w-[85px] border-r border-slate-300" title="Qualified charitable distributions: paid from the IRA to charity, not taxable, counted toward the RMD">QCD</th>
                                     <th class="py-2.5 px-3 min-w-[85px]">Roth Conv</th>
                                     <th class="py-2.5 px-3 min-w-[85px]">Cash W/D</th>
                                     <th class="py-2.5 px-3 min-w-[95px]">Brokerage W/D</th>
@@ -599,6 +629,7 @@
                                     <th class="py-2.5 px-3 min-w-[80px]">Eff. Rate</th>
                                     <th class="py-2.5 px-3 min-w-[80px]">Marg. Rate</th>
                                     <th class="py-2.5 px-3 min-w-[85px]">Fed Tax</th>
+                                    <th class="state-col py-2.5 px-3 min-w-[85px]">State Tax</th>
                                     <th class="py-2.5 px-3 bg-rose-50 text-rose-900 font-bold min-w-[95px]">Cum. Tax</th>
                                     <th class="py-2.5 px-3 min-w-[75px]">IRMAA Tier</th>
                                     <th class="py-2.5 px-3 min-w-[85px]">IRMAA ($)</th>
@@ -636,6 +667,26 @@
                         </table>
                     </div>
                     <p class="text-[11px] text-slate-400">Each claiming age is run on your current inputs and ranked by After-Tax Ending Wealth. Benefits scale from the amount you entered: about 70% of the age-67 amount at 62 up to 124% at 70 (full retirement age assumed to be 67), plus the COLA earned while waiting. Strategies that leave spending unfunded are not recommended. Educational estimate, not tax advice.</p>
+                </section>
+            </div>
+                    <div id="tab-qcd" class="space-y-6 hidden">
+                <section id="qcd-analysis" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-3">
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                            <h2 class="text-base font-bold text-slate-900 tracking-tight">Qualified Charitable Distribution (QCD) Analysis</h2>
+                        </div>
+                        <span id="qcd-badge" class="text-[11px] bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full font-semibold"></span>
+                    </div>
+                    <div id="qcd-rec" class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3"></div>
+                    <ul id="qcd-reasons" class="list-disc pl-5 space-y-1 text-xs text-slate-700"></ul>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-right border-collapse">
+                            <thead class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200"><tr><th class="py-2 px-2 text-left">Same gifts, different source</th><th class="py-2 px-2">Given to charity</th><th class="py-2 px-2">Lifetime tax</th><th class="py-2 px-2">IRMAA</th><th class="py-2 px-2">Leftover IRA</th><th class="py-2 px-2 bg-emerald-50 text-emerald-900">After-tax ending</th><th class="py-2 px-2">QCD advantage</th></tr></thead>
+                            <tbody id="qcd-tbody" class="text-slate-700"></tbody>
+                        </table>
+                    </div>
+                    <p class="text-[11px] text-slate-400">A QCD is a direct transfer from your IRA to a qualified charity (not a donor-advised fund or private foundation), allowed from age 70&frac12;. It is excluded from income, counts toward your RMD, and is limited to $111,000 per person in 2026 (indexed). The comparison gives the same dollars to charity each year from savings instead, with the $1,000 ($2,000 joint) non-itemizer deduction and no itemizing. Educational estimate, not tax advice.</p>
                 </section>
             </div>
                     <div id="tab-risk" class="space-y-6 hidden">
@@ -854,7 +905,7 @@
                     <div id="summary-law-note"><span class="font-bold text-slate-900">Tax law as of <span id="tax-law-asof"></span>:</span> 2026 tax year. The $6,000 senior deduction ends after 2028. RMDs follow SECURE 2.0 (age 73, or 75 if born 1960 or later).</div>
                     <div id="summary-infl-note"><span class="font-bold text-slate-900">Inflation/COLA (<span id="notes-infl"></span>) is applied to:</span> spending goal, Social Security and pension COLA, tax brackets, standard deductions, capital gains and IRMAA thresholds (IRMAA surcharges grow 1 pt faster). Not inflated: Social Security tax thresholds, NIIT thresholds and the senior deduction.</div>
                     <div id="summary-invest-note"><span class="font-bold text-slate-900">Investment income is taxed:</span> cash interest at ordinary rates; qualified dividends (2% brokerage yield) and brokerage gains at 0/15/20% (0% when taxable income is low) plus the 3.8% NIIT.</div>
-                    <div id="summary-state-tax-note"><span class="font-bold text-slate-900">Federal tax only:</span> state income tax is not included and varies by state. See the <a href="https://taxfoundation.org/research/all/state/2026-state-tax-changes/" target="_blank" rel="noopener noreferrer" class="underline text-indigo-600 hover:text-indigo-800">Tax Foundation</a> or a <a href="https://incomelaboratory.com/state-retirement-taxes-guide/" target="_blank" rel="noopener noreferrer" class="underline text-indigo-600 hover:text-indigo-800">state-by-state retirement tax guide</a>.</div>
+                    <div id="summary-state-tax-note"><span class="font-bold text-slate-900">Federal tax only:</span> state income tax is not included (enter a state rate in section 5 to model it); rules vary by state. See the <a href="https://taxfoundation.org/research/all/state/2026-state-tax-changes/" target="_blank" rel="noopener noreferrer" class="underline text-indigo-600 hover:text-indigo-800">Tax Foundation</a> or a <a href="https://incomelaboratory.com/state-retirement-taxes-guide/" target="_blank" rel="noopener noreferrer" class="underline text-indigo-600 hover:text-indigo-800">state-by-state retirement tax guide</a>.</div>
                 </div>
             </div>
         </div>
@@ -1034,6 +1085,9 @@
             const _adds = _g('inp-contrib-cash') + _g('inp-contrib-brokerage') + _g('inp-contrib-trad') + _g('inp-contrib-roth');
             document.getElementById('badge-balances').textContent = `${fmtCurr(totalBal)}` + (_working && _adds > 0 ? ` • +${fmtCurr(_adds)}/yr` : '');
             syncFilingStatusUI();
+            { const qm = document.getElementById('inp-qcd-mode').value;
+              document.getElementById('qcd-fixed-row').classList.toggle('hidden', qm !== 'fixed'); document.getElementById('qcd-pct-row').classList.toggle('hidden', qm !== 'rmd');
+              document.getElementById('qcd-age-row').classList.toggle('hidden', qm === 'none'); document.getElementById('qcd-hint').classList.toggle('hidden', qm === 'none'); }
             document.getElementById('fixed-roth-container').classList.toggle('hidden', document.getElementById('inp-roth-strategy').value !== 'fixed_amount');
             document.getElementById('pension-fields').classList.toggle('hidden', !document.getElementById('inp-has-pension').checked);
             document.getElementById('badge-legacy').textContent = `Heirs ${document.getElementById('inp-heir-tax-rate').value || 0}% \u2022 RMD: ${({ cash: 'cash', brokerage: 'brokerage', spend: 'spend' })[document.getElementById('inp-rmd-save-to').value]}`;
@@ -1117,7 +1171,8 @@
         function syncFilingStatusUI() {
             document.body.classList.toggle('is-single', document.getElementById('inp-filing-status').value === 'Single');
             const g = document.getElementById('ledger-grp-income');
-            if (g) g.colSpan = (document.body.classList.contains('is-single') ? 4 : 6) + (document.body.classList.contains('show-pre') ? 1 : 0);
+            if (g) g.colSpan = (document.body.classList.contains('is-single') ? 4 : 6) + (document.body.classList.contains('show-pre') ? 1 : 0) + (document.body.classList.contains('has-qcd') ? 1 : 0);
+            const gt = document.getElementById('ledger-grp-tax'); if (gt) gt.colSpan = 9 + (document.body.classList.contains('has-state') ? 1 : 0);
             const one = isSingleUI();
             document.querySelectorAll('.ages-th').forEach(el => { el.textContent = one ? 'Age' : 'Ages'; });
             document.querySelectorAll('.totalss-th').forEach(el => { el.textContent = one ? 'Social Security' : 'Total SS'; });
@@ -1169,10 +1224,12 @@
             } else kv('Pension / annuity / other income', 'None');
             section('Growth and inflation');
             kv('Return: pre-retirement', i.returnPre, XL_PCT1); kv('Return: post-retirement', i.returnPost, XL_PCT1); kv('Return: cash', i.returnCash, XL_PCT1); kv('Inflation / COLA', i.inflation, XL_PCT1, 'Also the cost-of-living adjustment for Social Security and pensions');
+            if (i.stateRate > 0) { kv('State income tax rate', i.stateRate, XL_PCT1, 'Flat rate'); kv('State deduction per year', i.stateDeduction, XL_USD, 'Indexed with Inflation/COLA'); kv('State taxes Social Security', yn(!i.stateExemptSS)); kv('State exempts IRA, pension & Roth conversions', yn(i.stateExemptRet)); } else kv('State income tax', 'Not modeled');
             section('Tax and strategy settings');
             kv('Roth conversion strategy', c.strategyLabel); if (i.rothStrategy === 'fixed_amount') kv('Fixed conversion per year', i.rothFixedAmt, XL_USD); kv('Convert while working', yn(i.allowWorkConversions)); kv('Salary (sizes working-year Roth conversions)', i.currentSalary, XL_USD, 'Used only to size conversions before retirement'); kv('Salary growth', i.salaryGrowth, XL_PCT1);
             section('Legacy planning');
-            kv('Excess RMD / surplus goes to', (v => v === 'cash' ? 'Cash' : v === 'spend' ? 'Spend (not saved)' : 'Brokerage')(i.rmdSaveTo)); kv('Heirs\' tax rate on leftover IRA', i.heirTaxRate, XL_PCT0, 'Used for after-tax ending wealth');
+            kv('Excess RMD / surplus goes to', (v => v === 'cash' ? 'Cash' : v === 'spend' ? 'Spend (not saved)' : 'Brokerage')(i.rmdSaveTo));
+            if (i.qcdMode === 'none') kv('QCDs from your IRA', 'Off'); else { kv('QCDs from your IRA', i.qcdMode === 'rmd' ? 'Share of RMD' : 'Fixed amount per year'); if (i.qcdMode === 'rmd') kv('QCD share of RMD', i.qcdPct, XL_PCT0); else kv('QCD per year (first-year dollars)', i.qcdAmount, XL_USD, 'Grows with Inflation/COLA'); kv('QCD start age', i.qcdStartAge, '0'); } kv('Heirs\' tax rate on leftover IRA', i.heirTaxRate, XL_PCT0, 'Used for after-tax ending wealth');
             section('Stress test');
             kv('Market drop year', i.shockYear > 0 ? i.shockYear : 'None', '0'); kv('Market drop size', i.shockYear > 0 ? i.shockPct : 0, XL_PCT0);
             r += 2; xlBand(ws, r, `Prepared by ${BRAND.legal}`, 3, XL.indigo9, XL.white); r++;
@@ -1186,7 +1243,7 @@
             xlTitle(ws, 'Executive Summary', `${c.name} | Prepared ${c.today} | ${c.inp.filingStatus === 'MFJ' ? 'Married filing jointly' : 'Single filer'}`, 2);
             let r = 3; const m = c.m;
             xlBand(ws, r, 'Key results', 2); r++;
-            [['Ending total assets (future dollars)', m.endAssets, XL_USD], ['Plan status', m.deficit === 0 ? 'Fully funded' : `${m.deficit} shortfall year(s)`, null], ['After-tax ending wealth (leftover IRA taxed at ' + (c.inp.heirTaxRate * 100).toFixed(0) + '%)', m.afterTax, XL_USD], ['Lifetime federal tax (retirement + Roth conversions)', m.tax, XL_USD], ['Lifetime IRMAA surcharges', m.irmaa, XL_USD], ['Tax + IRMAA', m.taxIrmaa, XL_USD],
+            [['Ending total assets (future dollars)', m.endAssets, XL_USD], ['Plan status', m.deficit === 0 ? 'Fully funded' : `${m.deficit} shortfall year(s)`, null], ['After-tax ending wealth (leftover IRA taxed at ' + (c.inp.heirTaxRate * 100).toFixed(0) + '%)', m.afterTax, XL_USD], [c.inp.stateRate > 0 ? 'Lifetime tax: federal + state (retirement + Roth conversions)' : 'Lifetime federal tax (retirement + Roth conversions)', m.tax, XL_USD], ...(c.inp.qcdMode !== 'none' ? [['Total QCDs to charity', c.qcdTotal, XL_USD]] : []), ...(c.inp.stateRate > 0 ? [['Lifetime state income tax', c.stateTotal, XL_USD]] : []), ['Lifetime IRMAA surcharges', m.irmaa, XL_USD], ['Tax + IRMAA', m.taxIrmaa, XL_USD],
              ['Total Roth conversions', m.conv, XL_USD], ['Pre-retirement contributions (total)', c.pre.contrib, XL_USD], ['Pre-retirement Roth conversions', c.pre.conv, XL_USD], ['Pre-retirement Roth conversion taxes', c.pre.convTax, XL_USD], ['Conversion taxes paid from', c.pre.convTax > 0.5 ? preTaxSources(c.pre).map(([k, v]) => `${k} ${fmtCurr(v)}`).join(' | ') : 'n/a (no conversions)', null], ['Peak tax-deferred balance', m.peakTrad, XL_USD], ['Ending tax-deferred balance', m.endTrad, XL_USD], ['Ending Roth balance', m.endRoth, XL_USD]].forEach(([k, v, f], n) => {
                 const row = ws.getRow(r); row.getCell(1).value = k; row.getCell(2).value = v; xlBody(row.getCell(1), null, n % 2); xlBody(row.getCell(2), f, n % 2); row.getCell(1).font = { bold: true }; row.getCell(2).alignment = { horizontal: 'left' };
                 if (k === 'Plan status') row.getCell(2).font = { bold: true, color: { argb: m.deficit === 0 ? XL.green : XL.red } }; r++; });
@@ -1195,7 +1252,7 @@
             r++; xlBand(ws, r, 'Narrative', 2); r++;
             [c.texts.solv, c.texts.tax, c.texts.rec].forEach(t => { ws.mergeCells(r, 1, r, 2); const x = ws.getCell(r, 1); x.value = t; x.alignment = { wrapText: true, vertical: 'top', indent: 1 }; ws.getRow(r).height = 32; r++; });
             r++; xlBand(ws, r, 'Notes', 2, XL.slate2, XL.slate7); r++;
-            [`Tax law as of ${c.asOf} (2026 tax year). The $6,000 senior deduction applies to tax years 2025 through 2028 and ends after 2028. Required minimum distributions follow SECURE 2.0 (start age 73, or 75 for those born in 1960 or later).`, 'Interest, dividends and capital gains are taxed (cash interest at ordinary rates; qualified dividends and brokerage gains at 0/15/20%, 0% when taxable income is low, plus the 3.8% NIIT). After-tax ending wealth taxes only the leftover IRA at the heirs\' rate; brokerage gets a stepped-up basis at death.', `Inflation/COLA of ${(c.inp.inflation * 100).toFixed(1)}% is applied to the spending goal, Social Security and pension COLA, tax brackets, standard deductions, capital gains and IRMAA thresholds (IRMAA surcharges grow 1 point faster). Not inflated: Social Security tax thresholds, NIIT thresholds and the senior deduction.`, 'Federal income tax only. Lifetime tax counts retirement withdrawals and Roth conversions; tax on pre-retirement earnings and state income taxes are not included and may add to your total taxes depending on where you live. Educational projection, not tax, legal or investment advice.', ].forEach(t => { ws.mergeCells(r, 1, r, 2); const x = ws.getCell(r, 1); x.value = t; x.font = { size: 10, color: { argb: XL.slate5 } }; x.alignment = { wrapText: true, vertical: 'top', indent: 1 }; ws.getRow(r).height = 28; r++; });
+            [`Tax law as of ${c.asOf} (2026 tax year). The $6,000 senior deduction applies to tax years 2025 through 2028 and ends after 2028. Required minimum distributions follow SECURE 2.0 (start age 73, or 75 for those born in 1960 or later).`, 'Interest, dividends and capital gains are taxed (cash interest at ordinary rates; qualified dividends and brokerage gains at 0/15/20%, 0% when taxable income is low, plus the 3.8% NIIT). After-tax ending wealth taxes only the leftover IRA at the heirs\' rate; brokerage gets a stepped-up basis at death.', `Inflation/COLA of ${(c.inp.inflation * 100).toFixed(1)}% is applied to the spending goal, Social Security and pension COLA, tax brackets, standard deductions, capital gains and IRMAA thresholds (IRMAA surcharges grow 1 point faster). Not inflated: Social Security tax thresholds, NIIT thresholds and the senior deduction.`, (c.inp.stateRate > 0 ? 'Federal and state income tax are both included (state as a flat rate; see Inputs). Lifetime tax counts retirement withdrawals and Roth conversions; tax on pre-retirement earnings is not included.' : 'Federal income tax only. Lifetime tax counts retirement withdrawals and Roth conversions; tax on pre-retirement earnings and state income taxes are not included and may add to your total taxes depending on where you live. Educational projection, not tax, legal or investment advice.'), ].forEach(t => { ws.mergeCells(r, 1, r, 2); const x = ws.getCell(r, 1); x.value = t; x.font = { size: 10, color: { argb: XL.slate5 } }; x.alignment = { wrapText: true, vertical: 'top', indent: 1 }; ws.getRow(r).height = 28; r++; });
             return ws;
         }
 
@@ -1219,7 +1276,7 @@
         ];
         XL_GROUP_FILL['Pre-Retirement Activity'] = 'FF4F46E5'; XL_GROUP_FILL['Conversion Tax Paid From'] = 'FFE11D48';
 
-        const xlLedgerCols = single => XL_LEDGER.filter(col => !(single && ['Spouse Age', 'Your SS', 'Spouse SS'].includes(col[0])));
+        const xlLedgerCols = (single, state, qcdOn) => { const cols = XL_LEDGER.filter(col => !(single && ['Spouse Age', 'Your SS', 'Spouse SS'].includes(col[0]))); if (qcdOn) { const qi = cols.findIndex(x => x[0] === 'RMD'); cols.splice(qi + 1, 0, ['QCD', 'Withdrawals', r => r.qcd, XL_USD, 11]); } if (state) { const i = cols.findIndex(x => x[0] === 'Federal Tax'); cols.splice(i + 1, 0, ['State Tax', 'Tax', r => r.stateTax, XL_USD, 11]); } return cols; };
         const xlPreCols = single => XL_PRE.filter(col => !(single && col[0] === 'Spouse Age'));
 
         function xlSheetPreRetirement(wb, c) {
@@ -1243,7 +1300,7 @@
         }
 
         function xlSheetLedger(wb, c) {
-            const XL_LEDGER = xlLedgerCols(c.inp.filingStatus === 'Single');
+            const XL_LEDGER = xlLedgerCols(c.inp.filingStatus === 'Single', c.inp.stateRate > 0, c.inp.qcdMode !== 'none');
             const rows = c.ledgerRows, n = rows.length, nc = XL_LEDGER.length, GR = 3, HR = 4, first = 5, last = first + n - 1;
             const ws = wb.addWorksheet('Ledger', { properties: { tabColor: { argb: 'FF0EA5E9' } }, views: [{ state: 'frozen', xSplit: 3, ySplit: HR, showGridLines: false }] });
             ws.columns = XL_LEDGER.map(col => ({ width: col[4] }));
@@ -1258,7 +1315,7 @@
             ws.getRow(HR).height = 32;
             rows.forEach((res, ri) => { const row = ws.getRow(first + ri); XL_LEDGER.forEach((col, k) => { const cell = row.getCell(k + 1); const v = col[2](res); cell.value = (typeof v === 'number') ? (col[3] === XL_USD ? Math.round(v) : v) : v; xlBody(cell, col[3], ri % 2); if (col[0] === 'Total Assets') cell.font = { bold: true }; if (col[0] === 'IRMAA Tier') cell.alignment = { horizontal: 'center' }; }); });
             const tot = ws.getRow(last + 1); tot.getCell(1).value = 'Total';
-            XL_LEDGER.forEach((col, k) => { const cell = tot.getCell(k + 1); if (['Spend Goal', 'Your SS', 'Spouse SS', 'Total SS', 'Pension', 'RMD', 'Roth Conversion', 'Cash W/D', 'Brokerage W/D', 'Trad IRA W/D', 'Roth W/D', 'Federal Tax', 'IRMAA Cost'].includes(col[0])) { const L = xlCol(k + 1); cell.value = { formula: `SUM(${L}${first}:${L}${last})` }; cell.numFmt = XL_USD; } cell.font = { bold: true }; cell.fill = xlFill(XL.indigo1); cell.border = { top: { style: 'medium', color: { argb: XL.indigo9 } } }; });
+            XL_LEDGER.forEach((col, k) => { const cell = tot.getCell(k + 1); if (['Spend Goal', 'Your SS', 'Spouse SS', 'Total SS', 'Pension', 'RMD', 'QCD', 'Roth Conversion', 'Cash W/D', 'Brokerage W/D', 'Trad IRA W/D', 'Roth W/D', 'Federal Tax', 'State Tax', 'IRMAA Cost'].includes(col[0])) { const L = xlCol(k + 1); cell.value = { formula: `SUM(${L}${first}:${L}${last})` }; cell.numFmt = XL_USD; } cell.font = { bold: true }; cell.fill = xlFill(XL.indigo1); cell.border = { top: { style: 'medium', color: { argb: XL.indigo9 } } }; });
             ws.autoFilter = { from: { row: HR, column: 1 }, to: { row: last, column: nc } };
             const taxCol = xlCol(XL_LEDGER.findIndex(x => x[0] === 'Federal Tax') + 1);
             ws.addConditionalFormatting({ ref: `${taxCol}${first}:${taxCol}${last}`, rules: [{ type: 'colorScale', cfvo: [{ type: 'min' }, { type: 'max' }], color: [{ argb: 'FFFFFFFF' }, { argb: 'FFFECDD3' }] }] });
@@ -1375,7 +1432,7 @@
         function xlSheetTaxLaw(wb, c) {
             const ws = wb.addWorksheet('Tax Law', { properties: { tabColor: { argb: 'FFF43F5E' } }, views: [{ showGridLines: false }] });
             ws.columns = [{ width: 36 }, { width: 22 }, { width: 22 }, { width: 28 }];
-            const P = c.tax; xlTitle(ws, `Tax Law Used (2026 tax year, as of ${c.asOf})`, 'Federal only. State income taxes are not included. The $6,000 senior deduction ends after tax year 2028.', 4);
+            const P = c.tax; xlTitle(ws, `Tax Law Used (2026 tax year, as of ${c.asOf})`, (c.inp.stateRate > 0 ? 'Federal parameters shown. State income tax is modeled separately as a flat rate (see Inputs). The $6,000 senior deduction ends after tax year 2028.' : 'Federal only. State income taxes are not included. The $6,000 senior deduction ends after tax year 2028.'), 4);
             let r = 3;
             const table = (title, heads, rows, fmts) => { xlBand(ws, r, title, 4); r++; heads.forEach((h, k) => xlHead(ws.getCell(r, k + 1))); heads.forEach((h, k) => ws.getCell(r, k + 1).value = h); r++; rows.forEach((row, n) => { row.forEach((v, k) => { const cell = ws.getCell(r, k + 1); cell.value = v; xlBody(cell, fmts[k], n % 2); if (k > 0) cell.alignment = { horizontal: 'right' }; }); r++; }); r++; };
             table('Deductions', ['Item', 'Married filing jointly', 'Single', 'Note'], [['Standard deduction', P.stdDeduction.MFJ, P.stdDeduction.Single, ''], ['Age 65+ add-on (each person)', P.stdDeduction.add65MFJ, P.stdDeduction.add65Single, ''], ['Senior deduction per person', P.seniorDed.amount, P.seniorDed.amount, `Tax years 2025 to ${P.seniorDed.endYear} only`], ['Senior deduction phase-out starts (MAGI)', P.seniorDed.phaseStart.MFJ, P.seniorDed.phaseStart.Single, `Reduced ${(P.seniorDed.rate * 100).toFixed(0)}% per $ above`]], [null, XL_USD, XL_USD, null]);
@@ -1439,13 +1496,13 @@
             xlTitle(chartsWs, 'Charts', 'Charts are native Excel charts linked to the Ledger tab and update if you edit the ledger values.', 20);
             if (c.results.some(r => r.isWorking)) xlSheetPreRetirement(wb, c);
             const led = xlSheetLedger(wb, c), sens = xlSheetSensitivity(wb, c); xlSheetTaxLaw(wb, c);
-            const rs = c.ledgerRows, first = led.first, last = led.last, ref = (name) => { const k = xlLedgerCols(c.inp.filingStatus === 'Single').findIndex(x => x[0] === name) + 1, L = xlCol(k); return { ref: `Ledger!$${L}$${first}:$${L}$${last}`, k }; };
+            const rs = c.ledgerRows, first = led.first, last = led.last, ref = (name) => { const k = xlLedgerCols(c.inp.filingStatus === 'Single', c.inp.stateRate > 0, c.inp.qcdMode !== 'none').findIndex(x => x[0] === name) + 1, L = xlCol(k); return { ref: `Ledger!$${L}$${first}:$${L}$${last}`, k }; };
             const catRef = ref('Your Age').ref, cats = rs.map(r => r.p1Age);
             const ser = (name, hdr, getter, color) => ({ name, catRef, cats, valRef: ref(hdr).ref, vals: rs.map(r => Math.round(getter(r))), color });
             const P = PALETTE, hx = h => h.slice(1).toUpperCase();
             const charts = [
                 { chart: { title: 'Year-end balances by account (x-axis: your age)', dir: 'col', grouping: 'stacked', series: [ser('Cash', 'End Cash', r => r.balCash, hx(P.cash)), ser('Brokerage', 'End Brokerage', r => r.balBrokerage, hx(P.brokerage)), ser('Tax-deferred', 'End Tax-Deferred', r => r.balTrad, hx(P.trad)), ser('Roth', 'End Roth', r => r.balRoth, hx(P.roth))] }, c1: 0, r1: 3, c2: 12, r2: 25 },
-                { chart: { title: 'Annual federal tax and IRMAA (x-axis: your age)', dir: 'col', grouping: 'stacked', series: [ser('Federal income tax', 'Federal Tax', r => r.fedTax, hx(P.tax)), ser('IRMAA surcharge', 'IRMAA Cost', r => r.irmaaCost, hx(P.irmaa))] }, c1: 0, r1: 27, c2: 12, r2: 49 },
+                { chart: { title: c.inp.stateRate > 0 ? 'Annual federal and state tax and IRMAA (x-axis: your age)' : 'Annual federal tax and IRMAA (x-axis: your age)', dir: 'col', grouping: 'stacked', series: [ser('Federal income tax', 'Federal Tax', r => r.fedTax, hx(P.tax)), ...(c.inp.stateRate > 0 ? [ser('State income tax', 'State Tax', r => r.stateTax, 'FB923C')] : []), ser('IRMAA surcharge', 'IRMAA Cost', r => r.irmaaCost, hx(P.irmaa))] }, c1: 0, r1: 27, c2: 12, r2: 49 },
                 { chart: { title: 'Funding sources vs. spending goal (x-axis: your age)', dir: 'col', grouping: 'stacked', series: [ser('Social Security', 'Total SS', r => r.ssIncome, hx(P.ss)), ser('Pension', 'Pension', r => r.pensionIncome, hx(P.pension)), ser('Cash W/D', 'Cash W/D', r => r.wdCash, hx(P.cash)), ser('Brokerage W/D', 'Brokerage W/D', r => r.wdbrokerage, hx(P.brokerage)), ser('Tax-deferred W/D (incl. RMD)', 'Trad IRA W/D', r => r.wdTrad + r.rmdAmount, hx(P.trad)), ser('Roth W/D', 'Roth W/D', r => r.wdRoth, hx(P.roth))], lines: [ser('Spending goal', 'Spend Goal', r => r.spendGoal, '0F172A')] }, c1: 0, r1: 51, c2: 12, r2: 73 }
             ];
             const top = sens.top, n = top.length;
@@ -1479,6 +1536,7 @@
             const rmdRow = first(r => r.rmdAmount > 0); if (rmdRow) ms.push(['First required minimum distribution', `Retirement yr ${rmdRow.retYear} (your age ${rmdRow.p1Age}), ${fmtCurr(rmdRow.rmdAmount)}`]);
             const convRows = rs.filter(r => r.rothConvAmount > 0);
             if (convRows.length) ms.push(['Roth conversions', `${convRows.length} yr${convRows.length === 1 ? '' : 's'}, your age ${convRows[0].p1Age} to ${convRows[convRows.length - 1].p1Age}, total ${fmtCurr(m.conv)}`]);
+            const qcdRows = rs.filter(r => r.qcd > 0); if (qcdRows.length) ms.push(['Qualified charitable distributions', `${qcdRows.length} yr${qcdRows.length === 1 ? '' : 's'}, your age ${qcdRows[0].p1Age} to ${qcdRows[qcdRows.length - 1].p1Age}, total ${fmtCurr(qcdRows.reduce((a, r) => a + r.qcd, 0))}`]);
             const irmRow = first(r => r.irmaaCost > 0); if (irmRow) ms.push(['First IRMAA surcharge', `Retirement yr ${irmRow.retYear} (${irmRow.irmaaTier}), ${fmtCurr(irmRow.irmaaCost)}`]);
             const peakTrad = rs.reduce((a, r) => r.balTrad > a.balTrad ? r : a, rs[0] || { balTrad: 0 }); ms.push(['Peak tax-deferred balance', `${fmtCurr(peakTrad.balTrad)} in ${yl(peakTrad)} (your age ${peakTrad.p1Age})`]);
             const peakTax = rs.reduce((a, r) => r.fedTax > a.fedTax ? r : a, rs[0] || { fedTax: 0 }); ms.push(['Highest single-year federal tax', `${fmtCurr(peakTax.fedTax)} in ${yl(peakTax)} (your age ${peakTax.p1Age})`]);
@@ -1489,7 +1547,7 @@
         function collectExportContext() {
             const inp = readInputs(), out = lastRunOut || runProjection(inp), m = scenarioMetrics(out);
             return {
-                inp, results: simulationResults, ledgerRows: simulationResults.filter(r => !r.isWorking), pre: preRetirementTotals(simulationResults), m, milestones: computeMilestones(simulationResults, m), sens: sensitivityData(), tax: activeTaxParams, roth: rothAnalysis(), ss: ssAnalysis(), risk: riskAnalysis(), asOf: TAX_LAW_AS_OF,
+                inp, results: simulationResults, ledgerRows: simulationResults.filter(r => !r.isWorking), pre: preRetirementTotals(simulationResults), m, milestones: computeMilestones(simulationResults, m), sens: sensitivityData(), stateTotal: out.totalLifetimeStateTax || 0, qcdTotal: out.totalLifetimeQcd || 0, tax: activeTaxParams, roth: rothAnalysis(), ss: ssAnalysis(), risk: riskAnalysis(), asOf: TAX_LAW_AS_OF,
                 name: (document.getElementById('scn-name') || {}).value || 'Scenario', today: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
                 strategyLabel: document.querySelector('#inp-roth-strategy option:checked').textContent.trim(),
                 texts: { solv: document.getElementById('summary-solvency-desc').textContent, tax: document.getElementById('summary-tax-desc').textContent, rec: document.getElementById('summary-rec-desc').textContent }
@@ -1637,6 +1695,13 @@
             const pensionStartAge = parseInt(document.getElementById('inp-pension-start-age').value) || 65;
             const pensionCola = inflation; // pensions use the Inflation/COLA assumption
             const volatility = Math.min(0.5, Math.max(0, (parseFloat(document.getElementById('inp-volatility').value) || 0) / 100));
+            const stateRate = Math.min(0.15, Math.max(0, (parseFloat(document.getElementById('inp-state-rate').value) || 0) / 100));
+            const stateDeduction = Math.max(0, parseFloat(document.getElementById('inp-state-deduction').value) || 0);
+            const stateExemptSS = document.getElementById('inp-state-exempt-ss').checked, stateExemptRet = document.getElementById('inp-state-exempt-ret').checked;
+            const qcdMode = ['fixed', 'rmd'].includes(document.getElementById('inp-qcd-mode').value) ? document.getElementById('inp-qcd-mode').value : 'none';
+            const qcdAmount = Math.max(0, parseFloat(document.getElementById('inp-qcd-amount').value) || 0);
+            const qcdPct = Math.min(1, Math.max(0, (parseFloat(document.getElementById('inp-qcd-pct').value) || 0) / 100));
+            const qcdStartAge = Math.min(100, Math.max(70, parseInt(document.getElementById('inp-qcd-age').value) || 71));
             const rmdSaveTo = ['cash', 'spend'].includes(document.getElementById('inp-rmd-save-to').value) ? document.getElementById('inp-rmd-save-to').value : 'brokerage';
             const heirTaxRate = Math.min(1, Math.max(0, (parseFloat(document.getElementById('inp-heir-tax-rate').value) || 0) / 100));
             const pensionSurvivorPct = Math.min(1, Math.max(0, (parseFloat(document.getElementById('inp-pension-survivor').value) || 0) / 100));
@@ -1653,7 +1718,7 @@
             const includeInvestIncome = capGainsOn; // one checkbox taxes interest, dividends and capital gains together
             const shockYear = parseInt(document.getElementById('inp-shock-year').value) || 0;
             const shockPct = (parseFloat(document.getElementById('inp-shock-pct').value) || 0) / 100;
-            return { filingStatus, p1Age, p1RetireAge, p1TargetAge, p2Age, p2RetireAge, p2TargetAge, currentSalary, salaryGrowth, contribCash, contribBrokerage, contribTrad, contribRoth, balCash, balBrokerage, balTrad, balRoth, returnCash, returnPre, returnPost, inflation, baseSpendingGoal, p1SSAmt, p1SSAge, p2SSAmt, p2SSAge, pensionBaseAmt, pensionStartAge, pensionCola, pensionSurvivorPct, p2PensionBaseAmt, p2PensionStartAge, p2PensionCola, p2PensionSurvivorPct, heirTaxRate, volatility, rmdSaveTo, todaysDollars, rothStrategy, rothFixedAmt, allowWorkConversions, capGainsOn, basisPct, includeInvestIncome, shockYear, shockPct };
+            return { filingStatus, p1Age, p1RetireAge, p1TargetAge, p2Age, p2RetireAge, p2TargetAge, currentSalary, salaryGrowth, contribCash, contribBrokerage, contribTrad, contribRoth, balCash, balBrokerage, balTrad, balRoth, returnCash, returnPre, returnPost, inflation, baseSpendingGoal, p1SSAmt, p1SSAge, p2SSAmt, p2SSAge, pensionBaseAmt, pensionStartAge, pensionCola, pensionSurvivorPct, p2PensionBaseAmt, p2PensionStartAge, p2PensionCola, p2PensionSurvivorPct, heirTaxRate, volatility, stateRate, stateDeduction, stateExemptSS, stateExemptRet, qcdMode, qcdAmount, qcdPct, qcdStartAge, rmdSaveTo, todaysDollars, rothStrategy, rothFixedAmt, allowWorkConversions, capGainsOn, basisPct, includeInvestIncome, shockYear, shockPct };
         }
 
         function runProjection(inp) {
@@ -1719,7 +1784,8 @@
             const p2RMDStartAge = getRMDStartAge(p2BirthYear);
 
             const results = [];
-            let totalLifetimeTax = 0;
+            let totalLifetimeTax = 0, totalLifetimeStateTax = 0, totalLifetimeQcd = 0;
+            const stateRate = inp.stateRate || 0, stateOn = stateRate > 0, stateTaxesSS = !inp.stateExemptSS, stateExemptRet = !!inp.stateExemptRet;
             let totalLifetimeIrmaa = 0;
             const agiHist = [];
             let balBasis = capGainsOn ? balBrokerage * basisPct : 0;
@@ -1851,7 +1917,34 @@
                     const factor = activeTaxParams.rmdFactors[currP2Age] || 6.4;
                     rmdP2 = balTrad / factor;
                 }
-                const totalRMD = rmdP1 + rmdP2;
+                const rmdGross = rmdP1 + rmdP2;
+                // Qualified charitable distributions: straight from the IRA to charity, never in income, applied to the RMD first
+                let qcd = 0;
+                const qcdFrom = Math.max(70, inp.qcdStartAge || 71);
+                if (inp.qcdMode && inp.qcdMode !== 'none' && !isWorking && p1Alive && balTrad > 0 && currP1Age >= qcdFrom) {
+                    const qcdTarget = inp.qcdMode === 'rmd' ? rmdGross * (inp.qcdPct || 0) : (inp.qcdAmount || 0) * Math.pow(1 + inflation, currP1Age - Math.max(qcdFrom, p1Age));   // first-QCD-year dollars; the plan's first year if the start age has already passed
+                    qcd = Math.max(0, Math.min(qcdTarget, QCD_LIMIT_2026 * Math.pow(1 + inflation, yr - 1), balTrad));
+                }
+                const totalRMD = Math.max(0, rmdGross - qcd);   // taxable RMD left after QCDs
+                // Gifts from savings (used only by the QCD comparison): extra spending, with the small non-itemizer deduction
+                const cashGift = (inp.cashGifts && !isWorking) ? (inp.cashGifts[yr - 1] || 0) : 0;
+                const charityDed = Math.min(cashGift, NONITEMIZER_GIVING_DED[filingStatus === 'MFJ' ? 'MFJ' : 'Single']);
+                // Money earmarked for planned future QCDs (present value) is not converted to Roth: it is better given from the IRA
+                let qcdReserve = 0;
+                if (inp.qcdMode && inp.qcdMode !== 'none' && p1Alive) {
+                    let b = Math.max(0, balTrad - Math.max(rmdGross, qcd)) * (1 + returnPost);
+                    for (let k = 1; currP1Age + k <= p1TargetAge && b > 0; k++) {
+                        const ageK = currP1Age + k, rmdK = ageK >= p1RMDStartAge ? b / (activeTaxParams.rmdFactors[ageK] || 6.4) : 0;
+                        let q = 0;
+                        if (ageK >= qcdFrom) {
+                            const tgt = inp.qcdMode === 'rmd' ? rmdK * (inp.qcdPct || 0) : (inp.qcdAmount || 0) * Math.pow(1 + inflation, ageK - Math.max(qcdFrom, p1Age));
+                            q = Math.min(tgt, QCD_LIMIT_2026 * Math.pow(1 + inflation, yr - 1 + k), b);
+                        }
+                        qcdReserve += q / Math.pow(1 + returnPost, k);
+                        b = Math.max(0, b - Math.max(rmdK, q)) * (1 + returnPost);
+                    }
+                    qcdReserve = Math.min(qcdReserve, Math.max(0, balTrad - totalRMD - qcd));
+                }
                 // Cash interest is ordinary income; the 2% brokerage yield is qualified dividends (0/15/20% like long-term gains, reinvested)
                 const cashInterest = includeInvestIncome ? balCash * returnCash : 0, qualDiv = includeInvestIncome ? balBrokerage * 0.02 : 0;
                 const investIncome = cashInterest + qualDiv;
@@ -1866,7 +1959,7 @@
                 const canConvert = p1Retired || (isWorking && allowWorkConversions);
 
                 if (canConvert && ['optimal', 'fill_12', 'fill_22', 'fill_24', 'fixed_amount'].includes(rothStrategy) && (p1Alive || p2Alive)) {
-                    let stdDed = effectiveFilingStatus === 'MFJ' ? curStdDedMFJ : curStdDedSingle;
+                    let stdDed = (effectiveFilingStatus === 'MFJ' ? curStdDedMFJ : curStdDedSingle) + charityDed;
                     if (effectiveFilingStatus === 'MFJ') {
                         if (currP1Age >= 65) stdDed += curAdd65MFJ;
                         if (currP2Age >= 65) stdDed += curAdd65MFJ;
@@ -1893,9 +1986,9 @@
                     const irmaaRelevant = (p1Alive && currP1Age + 2 >= 65) || (p2Alive && currP2Age + 2 >= 65);
 
                     if (rothStrategy === 'fixed_amount') {
-                        rothConvAmount = Math.max(0, Math.min(balTrad - totalRMD, rothFixedAmt));
+                        rothConvAmount = Math.max(0, Math.min(balTrad - totalRMD - qcd - qcdReserve, rothFixedAmt));
                     } else {
-                        let maxTradAvail = Math.max(0, balTrad - totalRMD);
+                        let maxTradAvail = Math.max(0, balTrad - totalRMD - qcd - qcdReserve);
                         let low = 0;
                         let high = maxTradAvail;
 
@@ -1940,6 +2033,16 @@
 
                 let taxableIncome = Math.max(0, agi - stdDeduction - seniorDedFor(agi));
                 let fedTax = calculateFedTaxWithGains(taxableIncome, qualDiv, effectiveFilingStatus, curBracketsMFJ, curBracketsSingle, curCg);
+                // State income tax: flat rate on interest, dividends, gains and (unless exempt) retirement income and Social Security, after an indexed deduction
+                const stateDed = (inp.stateDeduction || 0) * bracketInflationFactor;
+                const stateTaxOf = (realized, ssTax, conv, wdT) => {
+                    if (!stateOn) return 0;
+                    let base = investIncome + realized + (isWorking ? (currSalary - yrContribTrad) : 0);
+                    if (!stateExemptRet) base += pensionIncome + totalRMD + conv + wdT;
+                    if (stateTaxesSS) base += ssTax;
+                    return Math.max(0, base - stateDed) * stateRate;
+                };
+                let stTax = stateTaxOf(0, taxableSS, rothConvAmount, 0);
 
                 const retiredNow = (p1Retired || !p1Alive);
                 // IRMAA: Medicare uses MAGI from two years earlier (current-year proxy for first two years)
@@ -1958,8 +2061,9 @@
                     }
                 }
 
+                stdDeduction += charityDed;
                 // Spending need (retirees) + IRMAA surcharge; taxes are funded from the portfolio and solved iteratively
-                const baseNeed = retiredNow ? (currSpendingGoal - (ssIncome + pensionIncome)) + irmaaCost : 0; // negative = guaranteed income exceeds spending
+                const baseNeed = retiredNow ? (currSpendingGoal - (ssIncome + pensionIncome)) + irmaaCost + cashGift : 0; // negative = guaranteed income exceeds spending
                 let convTaxCost = 0;
                 if (isWorking && rothConvAmount > 0) {
                     const baseAgiNoConv = currSalary - yrContribTrad + pensionIncome + totalRMD + investIncome;
@@ -1969,7 +2073,8 @@
 
                 let wdCash = 0, wdbrokerage = 0, wdTrad = 0, wdRoth = 0, shortfall = 0, rmdUsed = 0, realizedGain = 0;
                 const gainFrac = (capGainsOn && balBrokerage > 0) ? Math.max(0, 1 - Math.min(balBasis, balBrokerage) / balBrokerage) : 0;
-                let taxToFund = retiredNow ? fedTax : convTaxCost;
+                const convStateCost = (isWorking && rothConvAmount > 0 && stateOn) ? Math.max(0, stateTaxOf(0, taxableSS, rothConvAmount, 0) - stateTaxOf(0, taxableSS, 0, 0)) : 0;
+                let taxToFund = retiredNow ? fedTax + stTax : convTaxCost + convStateCost;
                 let incomeSurplus = 0;
                 for (let pass = 0; pass < 40; pass++) {
                     let need = baseNeed + taxToFund;
@@ -1978,8 +2083,10 @@
                     wdCash = Math.min(balCash + (isWorking ? yrContribCash : 0), need); need -= wdCash;
                     wdbrokerage = Math.min(balBrokerage, need); need -= wdbrokerage;
                     realizedGain = wdbrokerage * gainFrac;
-                    wdTrad = retiredNow ? Math.min(Math.max(0, balTrad - totalRMD - rothConvAmount), need) : 0; need -= wdTrad;
+                    const tradAvail = Math.max(0, balTrad - totalRMD - qcd - rothConvAmount);
+                    wdTrad = retiredNow ? Math.min(Math.max(0, tradAvail - qcdReserve), need) : 0; need -= wdTrad;   // IRA money earmarked for QCDs is not spent while other assets remain
                     wdRoth = Math.min(balRoth, need); need -= wdRoth;
+                    if (retiredNow && need > 0 && qcdReserve > 0) { const dip = Math.min(tradAvail - wdTrad, need); wdTrad += dip; need -= dip; }   // last resort: use the reserve rather than run short
                     shortfall = need;
 
                     taxableSS = calculateTaxableSocialSecurity(nonSSIncome + rothConvAmount + wdTrad + realizedGain, ssIncome, effectiveFilingStatus, curSsThreshMFJ, curSsThreshSingle);
@@ -1990,9 +2097,10 @@
                         const niitThr = effectiveFilingStatus === 'MFJ' ? 250000 : 200000; // not inflation-indexed
                         newTax += 0.038 * Math.min(realizedGain + investIncome, Math.max(0, agi - niitThr));
                     }
-                    const converged = Math.abs(newTax - fedTax) < 0.005;
-                    fedTax = newTax;
-                    if (retiredNow) taxToFund = newTax;
+                    const newState = stateTaxOf(realizedGain, taxableSS, rothConvAmount, wdTrad);
+                    const converged = Math.abs(newTax - fedTax) < 0.005 && Math.abs(newState - stTax) < 0.005;
+                    fedTax = newTax; stTax = newState;
+                    if (retiredNow) taxToFund = newTax + newState;
                     if (converged) break;
                 }
                 const rmdSurplus = totalRMD - rmdUsed; // RMD not needed for spending/tax is deposited to cash
@@ -2001,9 +2109,9 @@
                 }
                 agiHist[yr - 1] = agi;
                 // Tax on pre-retirement earnings is ignored; only the tax caused by Roth conversions is counted
-                if (!retiredNow) fedTax = convTaxCost;
+                if (!retiredNow) { fedTax = convTaxCost; stTax = convStateCost; }
 
-                totalLifetimeTax += fedTax;
+                totalLifetimeTax += fedTax + stTax; totalLifetimeStateTax += stTax; totalLifetimeQcd += qcd;
                 totalLifetimeIrmaa += irmaaCost;
 
                 const effectiveRate = agi > 0 ? (fedTax / agi) : 0;
@@ -2021,7 +2129,7 @@
                 if (capGainsOn) {
                     balBasis = Math.min(endBrokerage, Math.max(0, balBasis - wdbrokerage * (1 - gainFrac) + (isWorking ? yrContribBrokerage : 0) + (toBrokerage ? surplusSaved : 0) + qualDiv)); // reinvested (already taxed) dividends add to basis
                 }
-                let endTrad = Math.max(0, (balTrad + (isWorking ? yrContribTrad : 0) - totalTradWithdrawal - wdTrad) * (1 + (isWorking ? appliedPreRetGrowth : appliedPostRetGrowth)));
+                let endTrad = Math.max(0, (balTrad + (isWorking ? yrContribTrad : 0) - totalTradWithdrawal - wdTrad - qcd) * (1 + (isWorking ? appliedPreRetGrowth : appliedPostRetGrowth)));
                 let endRoth = Math.max(0, (balRoth + (isWorking ? yrContribRoth : 0) + rothConvAmount - wdRoth) * (1 + (isWorking ? appliedPreRetGrowth : appliedPostRetGrowth)));
 
                 if (shockYear === yr && shockPct > 0) {
@@ -2038,7 +2146,7 @@
                     p2Age: currP2Age,
                     salary: currSalary,
                     isWorking,
-                    convTax: !retiredNow ? convTaxCost : 0,
+                    convTax: !retiredNow ? convTaxCost + convStateCost : 0,
                     convTaxCash: !retiredNow ? wdCash : 0,
                     convTaxBrokerage: !retiredNow ? wdbrokerage : 0,
                     convTaxIra: !retiredNow ? (wdTrad + rmdUsed) : 0,
@@ -2052,6 +2160,10 @@
                     p1PensionIncome,
                     p2PensionIncome,
                     rmdAmount: totalRMD,
+                    rmdRequired: rmdGross,
+                    shortfall: retiredNow ? shortfall : 0,
+                    qcd,
+                    cashGift,
                     rmdSaved: surplusSaved,
                     rothConvAmount,
                     wdCash,
@@ -2064,6 +2176,7 @@
                     effectiveRate,
                     marginalRate,
                     fedTax,
+                    stateTax: stTax,
                     cumulativeTax: totalLifetimeTax,
                     irmaaTier,
                     irmaaCost,
@@ -2084,7 +2197,7 @@
             // Retirement-phase year number (1 = first retirement year); 0 for pre-retirement rows
             const firstRet = results.findIndex(r => !r.isWorking);
             results.forEach((r, i) => { r.retYear = r.isWorking ? 0 : i - firstRet + 1; });
-            return { results, totalLifetimeTax, totalLifetimeIrmaa, totalDeficitYears, heirTaxRate };
+            return { results, totalLifetimeTax, totalLifetimeStateTax, totalLifetimeQcd, totalLifetimeIrmaa, totalDeficitYears, heirTaxRate };
         }
 
 
@@ -2136,14 +2249,14 @@
             'inp-bal-cash': 'Cash balance', 'inp-contrib-cash': 'Cash savings per year', 'inp-bal-brokerage': 'Brokerage balance', 'inp-contrib-brokerage': 'Brokerage savings per year', 'inp-bal-trad': 'Tax-deferred balance', 'inp-contrib-trad': 'Tax-deferred savings per year', 'inp-bal-roth': 'Roth balance', 'inp-contrib-roth': 'Roth savings per year', 'inp-brokerage-basis-pct': 'Brokerage cost basis',
             'inp-spending-goal': 'Spending goal', 'inp-rmd-save-to': 'Excess RMD goes to', 'inp-p1-ss-amt': 'Your Social Security', 'inp-p2-ss-amt': 'Spouse Social Security', 'inp-p1-ss-age': 'Your SS claim age', 'inp-p2-ss-age': 'Spouse SS claim age', 'inp-has-pension': 'Pension / annuity', 'inp-pension-amt': 'Your pension', 'inp-p2-pension-amt': 'Spouse pension', 'inp-pension-start-age': 'Your pension start age', 'inp-p2-pension-start-age': 'Spouse pension start age', 'inp-pension-survivor': 'Your pension spousal share', 'inp-p2-pension-survivor': 'Spouse pension spousal share',
             'inp-roth-strategy': 'Roth strategy', 'inp-roth-fixed-amt': 'Fixed Roth conversion', 'inp-allow-work-conversions': 'Convert while working', 'inp-current-salary': 'Salary', 'inp-salary-growth': 'Salary growth',
-            'inp-return-cash': 'Cash growth', 'inp-return-preret': 'Pre-retirement growth', 'inp-return-postret': 'Post-retirement growth', 'inp-inflation-rate': 'Inflation/COLA', 'inp-shock-year': 'Stress test year', 'inp-shock-pct': 'Stress test drop', 'inp-heir-tax-rate': "Heirs' tax rate" };
+            'inp-qcd-mode': 'QCD giving', 'inp-qcd-amount': 'QCD per year', 'inp-qcd-pct': 'QCD share of RMD', 'inp-qcd-age': 'QCD start age', 'inp-state-rate': 'State tax rate', 'inp-state-deduction': 'State deduction', 'inp-state-exempt-ss': 'State exempts Social Security', 'inp-state-exempt-ret': 'State exempts retirement income', 'inp-return-cash': 'Cash growth', 'inp-return-preret': 'Pre-retirement growth', 'inp-return-postret': 'Post-retirement growth', 'inp-inflation-rate': 'Inflation/COLA', 'inp-shock-year': 'Stress test year', 'inp-shock-pct': 'Stress test drop', 'inp-heir-tax-rate': "Heirs' tax rate" };
         function scnDisplay(id, v) {
             const el = document.getElementById(id); if (!el) return String(v);
             if (el.type === 'checkbox') return v ? 'Yes' : 'No';
             if (el.tagName === 'SELECT') { const o = [...el.options].find(x => x.value === String(v)); return o ? o.textContent.trim() : String(v); }
             const n = parseFloat(v); if (isNaN(n)) return String(v);
-            if (/(bal-|contrib-|spending-goal|ss-amt|pension-amt|fixed-amt|current-salary)/.test(id)) return fmtCurr(n);
-            if (/(return-|inflation|growth|basis-pct|tax-rate|survivor)/.test(id)) return n + '%';
+            if (/(bal-|contrib-|spending-goal|ss-amt|pension-amt|fixed-amt|current-salary|state-deduction|qcd-amount)/.test(id)) return fmtCurr(n);
+            if (/(return-|inflation|growth|basis-pct|tax-rate|survivor|state-rate|qcd-pct)/.test(id)) return n + '%';
             return String(v);
         }
         // Which input differences are worth listing (hide settings that are switched off in both versions)
@@ -2155,6 +2268,10 @@
                 if (typeof aState[id] === 'string' && typeof bState[id] === 'string' && !isNaN(na) && !isNaN(nb) && na === nb && document.getElementById(id) && document.getElementById(id).tagName !== 'SELECT') return;   // "6.0" vs "6" is not a change
                 if (single && /^inp-p2-/.test(id)) return;
                 if (/salary/.test(id) && aState['inp-roth-strategy'] === 'none' && bState['inp-roth-strategy'] === 'none') return;
+                if (/inp-state-/.test(id) && id !== 'inp-state-rate' && !(parseFloat(aState['inp-state-rate']) > 0) && !(parseFloat(bState['inp-state-rate']) > 0)) return;
+                if (/inp-qcd-/.test(id) && id !== 'inp-qcd-mode' && aState['inp-qcd-mode'] === 'none' && bState['inp-qcd-mode'] === 'none') return;
+                if (id === 'inp-qcd-amount' && aState['inp-qcd-mode'] !== 'fixed' && bState['inp-qcd-mode'] !== 'fixed') return;
+                if (id === 'inp-qcd-pct' && aState['inp-qcd-mode'] !== 'rmd' && bState['inp-qcd-mode'] !== 'rmd') return;
                 if (id === 'inp-roth-fixed-amt' && aState['inp-roth-strategy'] !== 'fixed_amount' && bState['inp-roth-strategy'] !== 'fixed_amount') return;
                 if (/pension/.test(id) && id !== 'inp-has-pension' && !aState['inp-has-pension'] && !bState['inp-has-pension']) return;
                 out.push(`${SCN_LABELS[id]}: ${scnDisplay(id, aState[id])} \u2192 ${scnDisplay(id, bState[id])}`);
@@ -2244,18 +2361,21 @@
         const PALETTE = { cash: '#94a3b8', brokerage: '#0ea5e9', trad: '#8b5cf6', roth: '#10b981', total: '#0f172a', tax: '#f43f5e', cumTax: '#be123c', irmaa: '#f59e0b', salary: '#6366f1', ss: '#14b8a6', pension: '#f97316', withdrawals: '#ec4899' };
         const paletteAlpha = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16}, ${(n >> 8) & 255}, ${n & 255}, ${a})`; };
         const BRAND = { name: 'Second Inning Financial', legal: 'Second Inning Financial LLC', tagline: 'Plan your second act', contact: 'krishna.fincoach@gmail.com', disclaimer: 'Educational projection, not tax, legal or investment advice.' };
-        const APP_VERSION = '1.2';
-        let currentTab = 'overview';
+        const APP_VERSION = '1.4';
+        const QCD_LIMIT_2026 = 111000;   // per taxpayer, indexed with Inflation/COLA from 2026
+        const NONITEMIZER_GIVING_DED = { MFJ: 2000, Single: 1000 };   // cash gifts, non-itemizers, from 2026
+        let currentTab = 'overview', stateNoteDefault = null;
         const TAB_ON = 'px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition border-indigo-600 text-indigo-700', TAB_OFF = 'px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition border-transparent text-slate-500 hover:text-slate-800';
         function showTab(name) {
             currentTab = name;
-            ['overview', 'cashflow', 'roth', 'ss', 'risk', 'whatif', 'scenarios'].forEach(n => {
+            ['overview', 'cashflow', 'roth', 'ss', 'qcd', 'risk', 'whatif', 'scenarios'].forEach(n => {
                 document.getElementById('tab-' + n).classList.toggle('hidden', n !== name);
                 const b = document.querySelector(`[data-tab="${n}"]`); b.className = 'tab-btn ' + (n === name ? TAB_ON : TAB_OFF); b.setAttribute('aria-selected', n === name ? 'true' : 'false');
             });
             const mainEl = document.querySelector('main'), bar = document.getElementById('tab-bar');
             if (mainEl.scrollTop > bar.offsetTop) mainEl.scrollTop = bar.offsetTop;   // keep the tab bar in view after switching
             if (name === 'ss') renderSSAnalysis();
+            if (name === 'qcd') renderQcd();
             if (name === 'risk') { if (!document.getElementById('risk-pct').textContent || lastRiskKey !== JSON.stringify(readInputs())) document.getElementById('risk-sub').textContent = 'Running simulations...'; setTimeout(renderRisk, 30); }
             if (name === 'whatif') renderSensitivity();
             if (name === 'scenarios') refreshComparison();
@@ -2292,8 +2412,8 @@
                 const bar = (label, key, color) => ({ label, data: rs.map(r => r[key]), backgroundColor: color, stack: 's' });
                 const datasets = kind === 'assets'
                     ? [bar('Cash', 'balCash', PALETTE.cash), bar('Brokerage', 'balBrokerage', PALETTE.brokerage), bar('Tax-deferred', 'balTrad', PALETTE.trad), bar('Roth', 'balRoth', PALETTE.roth)]
-                    : [bar('Federal income tax', 'fedTax', PALETTE.tax), bar('IRMAA surcharge', 'irmaaCost', PALETTE.irmaa)];
-                const title = kind === 'assets' ? 'Year-end balances by account type (x-axis: your age)' : 'Annual federal tax and IRMAA surcharges (x-axis: your age)';
+                    : [bar('Federal income tax', 'fedTax', PALETTE.tax), ...(rows.some(r => r.stateTax > 0) ? [bar('State income tax', 'stateTax', '#fb923c')] : []), bar('IRMAA surcharge', 'irmaaCost', PALETTE.irmaa)];
+                const title = kind === 'assets' ? 'Year-end balances by account type (x-axis: your age)' : (readInputs().stateRate > 0 ? 'Annual federal and state tax and IRMAA surcharges (x-axis: your age)' : 'Annual federal tax and IRMAA surcharges (x-axis: your age)');
                 const ch = new Chart(c, { type: 'bar', data: { labels, datasets }, options: { animation: false, responsive: false, devicePixelRatio: 2,
                     plugins: { title: { display: true, text: title }, legend: { position: 'bottom' } },
                     scales: { x: { stacked: true }, y: { stacked: true, ticks: { callback: v => (kind === 'assets' ? '$' + (v / 1e6).toFixed(1) + 'M' : '$' + Math.round(v / 1000) + 'k') } } } } });
@@ -2328,8 +2448,9 @@
             const preMax = preRows.reduce((mx, r) => Math.max(mx, ...preCols(r).map(v => rD(v).length)), 4);
             const rowHp = Math.max(15, Math.min(24, Math.floor(560 / (preRows.length + 3)))), fszp = Math.max(7.5, Math.min(11, rowHp * 0.58, 50 / (preMax * 0.6))).toFixed(1);
             const preRowsHtml = preRows.map(r => `<tr><td>${r.year}</td><td>${r.p1Age}</td>${mfj ? `<td>${r.p2Age || '-'}</td>` : ''}${preCols(r).map((v, k) => `<td${k === 11 ? ' style="font-weight:700"' : ''}>${rD(v)}</td>`).join('')}</tr>`).join('');
+            const stOn = inp.stateRate > 0, qOn = inp.qcdMode !== 'none';
             const rowH = Math.max(15, Math.min(28, Math.floor(640 / (retRows.length + 1.5)))), fsz = Math.max(7.5, Math.min(11, rowH * 0.58, 54 / (maxLen * 0.6))).toFixed(1);
-            const yrRows = retRows.map(r => `<tr><td>${r.retYear}</td><td>${r.p1Age}</td>${mfj ? `<td>${r.p2Age || '-'}</td>` : ''}<td>${rD(r.ssIncome + r.pensionIncome)}</td><td>${rD(r.rmdAmount)}</td><td>${rD(r.rothConvAmount)}</td><td>${rD(r.wdCash + r.wdbrokerage + r.wdTrad + r.wdRoth)}</td><td>${rD(r.agi)}</td><td>${rD(r.fedTax)}</td><td>${rD(r.irmaaCost)}</td><td>${rPct(r.effectiveRate)}</td><td>${rD(r.balCash)}</td><td>${rD(r.balBrokerage)}</td><td>${rD(r.balTrad)}</td><td>${rD(r.balRoth)}</td><td><b>${rD(r.endTotalAssets)}</b></td></tr>`).join('');
+            const yrRows = retRows.map(r => `<tr><td>${r.retYear}</td><td>${r.p1Age}</td>${mfj ? `<td>${r.p2Age || '-'}</td>` : ''}<td>${rD(r.ssIncome + r.pensionIncome)}</td><td>${rD(r.rmdAmount)}</td>${qOn ? `<td>${rD(r.qcd)}</td>` : ''}<td>${rD(r.rothConvAmount)}</td><td>${rD(r.wdCash + r.wdbrokerage + r.wdTrad + r.wdRoth)}</td><td>${rD(r.agi)}</td><td>${rD(r.fedTax)}</td>${stOn ? `<td>${rD(r.stateTax)}</td>` : ''}<td>${rD(r.irmaaCost)}</td><td>${rPct(r.effectiveRate)}</td><td>${rD(r.balCash)}</td><td>${rD(r.balBrokerage)}</td><td>${rD(r.balTrad)}</td><td>${rD(r.balRoth)}</td><td><b>${rD(r.endTotalAssets)}</b></td></tr>`).join('');
 
             const imgA = reportChartImage('assets'), imgT = reportChartImage('tax');
             const solv = document.getElementById('summary-solvency-desc').textContent, taxd = document.getElementById('summary-tax-desc').textContent, rec = document.getElementById('summary-rec-desc').textContent;
@@ -2344,7 +2465,7 @@
 <div class="kpi"><span class="sub">Ending total assets</span><b>${fmtCurr(m.endAssets)}</b></div>
 <div class="kpi"><span class="sub">Plan status</span><b>${m.deficit === 0 ? 'Fully funded' : m.deficit + ' shortfall yr(s)'}</b></div>
 <div class="kpi"><span class="sub">After-tax ending wealth</span><b>${fmtCurr(m.afterTax)}</b></div>
-<div class="kpi"><span class="sub">Lifetime tax (retirement + Roth conv.)</span><b>${fmtCurr(m.tax)}</b></div>
+<div class="kpi"><span class="sub">Lifetime tax (${inp.stateRate > 0 ? 'federal + state, ' : ''}retirement + Roth conv.)</span><b>${fmtCurr(m.tax)}</b></div>
 <div class="kpi"><span class="sub">Lifetime IRMAA</span><b>${fmtCurr(m.irmaa)}</b></div>
 </div>
 <ul class="narr"><li>${rEsc(solv)}</li><li>${rEsc(taxd)}</li><li>${rEsc(rec)}</li></ul>
@@ -2366,10 +2487,10 @@ ${kv([['Spending goal (per year)', fmtCurr(inp.baseSpendingGoal)], ['Your Social
   ...((inp.pensionBaseAmt > 0 || inp.p2PensionBaseAmt > 0) ? [['Your pension / start age', `${fmtCurr(inp.pensionBaseAmt)} / ${inp.pensionStartAge}`], mfj ? ['Your pension: share kept by spouse', rPct(inp.pensionSurvivorPct, 0)] : null,
   mfj ? ['Spouse pension / start age', `${fmtCurr(inp.p2PensionBaseAmt)} / ${inp.p2PensionStartAge}`] : null, mfj ? ['Spouse pension: share kept by you', rPct(inp.p2PensionSurvivorPct, 0)] : null] : [['Pension / annuity / other income', 'None']])])}
 <b>Growth, inflation and tax settings</b>
-${kv([['Return: pre-retirement / post / cash', `${rPct(inp.returnPre)} / ${rPct(inp.returnPost)} / ${rPct(inp.returnCash)}`], ['Inflation / COLA', rPct(inp.inflation)],
+${kv([['Return: pre-retirement / post / cash', `${rPct(inp.returnPre)} / ${rPct(inp.returnPost)} / ${rPct(inp.returnCash)}`], ['Inflation / COLA', rPct(inp.inflation)], ['State income tax', inp.stateRate > 0 ? `${rPct(inp.stateRate)} flat; deduction ${fmtCurr(inp.stateDeduction)}; ${inp.stateExemptSS ? 'Social Security exempt' : 'taxes Social Security'}; ${inp.stateExemptRet ? 'retirement income exempt' : 'taxes retirement income'}` : 'Not modeled'],
   ['Roth conversion strategy', rEsc(strat)], working ? ['Salary / growth (sizes working-year conversions)', `${fmtCurr(inp.currentSalary)} / ${rPct(inp.salaryGrowth)}`] : null, working ? ['Convert while working', yesNo(inp.allowWorkConversions)] : null, inp.shockYear > 0 ? ['Market shock', `${rPct(inp.shockPct, 0)} decline in year ${inp.shockYear}`] : null])}
 <b>Legacy planning</b>
-${kv([['Excess RMD / surplus goes to', (v => v === 'cash' ? 'Cash' : v === 'spend' ? 'Spend (not saved)' : 'Brokerage')(inp.rmdSaveTo)], ['Heirs\' tax rate on leftover IRA', rPct(inp.heirTaxRate, 0)]])}
+${kv([['QCDs from your IRA', inp.qcdMode === 'none' ? 'Off' : (inp.qcdMode === 'rmd' ? `${rPct(inp.qcdPct, 0)} of RMD from age ${inp.qcdStartAge}` : `${fmtCurr(inp.qcdAmount)} a year from age ${inp.qcdStartAge}, growing with inflation`)], ['Excess RMD / surplus goes to', (v => v === 'cash' ? 'Cash' : v === 'spend' ? 'Spend (not saved)' : 'Brokerage')(inp.rmdSaveTo)], ['Heirs\' tax rate on leftover IRA', rPct(inp.heirTaxRate, 0)]])}
 </div></div>
 
 <h2>4. Charts</h2>
@@ -2398,8 +2519,9 @@ ${kv([['Standard deduction: MFJ / Single', `${fmtCurr(P.stdDeduction.MFJ)} / ${f
 
 <h2>10. Notes and limitations</h2>
 <ul class="note">
-<li>This report covers federal income tax only. Lifetime tax counts retirement withdrawals and Roth conversions; tax on pre-retirement earnings and state income taxes are not included and may add to total taxes depending on where you live.</li>
+<li>${inp.stateRate > 0 ? 'This report includes federal income tax and state income tax (modeled as a flat rate on the income you indicated; state rules vary, so confirm yours). Lifetime tax counts retirement withdrawals and Roth conversions; tax on pre-retirement earnings is not included.' : 'This report covers federal income tax only. Lifetime tax counts retirement withdrawals and Roth conversions; tax on pre-retirement earnings and state income taxes are not included and may add to total taxes depending on where you live.'}</li>
 <li>After-tax ending wealth taxes only the leftover IRA at the heirs' rate; brokerage receives a stepped-up basis at death, and Roth and cash are tax-free.</li>
+<li>${qOn ? 'Qualified charitable distributions (QCDs) are paid from the IRA straight to charity, are excluded from income, and are applied to the required minimum distribution first. The annual limit is $111,000 per person in 2026, indexed; the model applies one limit and uses your age.' : 'QCDs are not modeled in this plan.'}</li>
 <li>Cash interest is taxed at ordinary rates. Qualified dividends (a 2% brokerage yield, reinvested and added to cost basis) and gains on brokerage sales, using the cost basis entered, are taxed at 0/15/20% stacked on top of ordinary income (0% when taxable income is below the threshold), plus the 3.8% NIIT.</li>
 <li>Inflation/COLA of ${rPct(inp.inflation)} is applied to the spending goal, Social Security and pension COLA, tax brackets, standard deductions, capital gains and IRMAA thresholds (IRMAA surcharges grow 1 point faster). Social Security tax thresholds, NIIT thresholds and the senior deduction are not inflated.</li>
 <li>Returns and inflation are constant assumptions in the base projection; actual results will vary. Section 7 shows how often the plan stays funded across 1,000 simulated markets, and the sensitivity section shows how results change under other assumptions, including a market drop at retirement. Neither is a forecast.</li>
@@ -2416,7 +2538,7 @@ ${preRows.length ? `<div class="rpt-wide rpt-break">
 
 <div class="rpt-wide rpt-break">
 <h2>${preRows.length ? '12. Appendix B' : '11. Appendix'}: Retirement Cash Flow & Tax Ledger (Year-by-Year, whole dollars)</h2>
-<table class="grid-year" style="--rowh:${rowH}px;--fs:${fsz}px"><thead><tr><th>Yr</th><th>${mfj ? 'You' : 'Age'}</th>${mfj ? '<th>Spouse</th>' : ''}<th>Income</th><th>RMD</th><th>Roth conv</th><th>Withdrawals</th><th>AGI</th><th>Fed tax</th><th>IRMAA</th><th>Eff. rate</th><th>Cash</th><th>Brokerage</th><th>Tax-deferred</th><th>Roth</th><th>Total assets</th></tr></thead><tbody>${yrRows}</tbody></table>
+<table class="grid-year" style="--rowh:${rowH}px;--fs:${fsz}px"><thead><tr><th>Yr</th><th>${mfj ? 'You' : 'Age'}</th>${mfj ? '<th>Spouse</th>' : ''}<th>Income</th><th>RMD</th>${qOn ? '<th>QCD</th>' : ''}<th>Roth conv</th><th>Withdrawals</th><th>AGI</th><th>Fed tax</th>${stOn ? '<th>State tax</th>' : ''}<th>IRMAA</th><th>Eff. rate</th><th>Cash</th><th>Brokerage</th><th>Tax-deferred</th><th>Roth</th><th>Total assets</th></tr></thead><tbody>${yrRows}</tbody></table>
 <p class="note">Year 1 is the first retirement year. Income = Social Security + pension. Withdrawals = cash + brokerage + tax-deferred + Roth withdrawals (including required distributions and Roth conversions moved out of the IRA). Balances are year-end.</p>
 </div>
 
@@ -2566,7 +2688,7 @@ ${img ? `<img src="${img}" alt="Simulated asset paths">` : ''}
             const { b, cases } = sensitivityData();
             const dCell = (d, goodSign) => { const z = Math.abs(d) < 0.5; const col = z ? 'text-slate-400' : (d * goodSign > 0 ? 'text-emerald-600' : 'text-rose-600'); return `<td class="py-1 text-right ${col}">${z ? '-' : (d > 0 ? '+' : '-') + fmtCurr(Math.abs(d))}</td>`; };
             const groups = [...new Set(cases.map(c => c.group))];
-            let html = `<div class="text-xs bg-slate-50 border border-slate-200 rounded-lg p-3 mb-3"><span class="font-semibold text-slate-800">Current inputs:</span> ending assets ${fmtCurr(b.endAssets)} (future dollars) &middot; lifetime federal tax ${fmtCurr(b.tax)} &middot; ${b.status}</div>`;
+            let html = `<div class="text-xs bg-slate-50 border border-slate-200 rounded-lg p-3 mb-3"><span class="font-semibold text-slate-800">Current inputs:</span> ending assets ${fmtCurr(b.endAssets)} (future dollars) &middot; lifetime tax ${fmtCurr(b.tax)} &middot; ${b.status}</div>`;
             groups.forEach(g => {
                 html += `<div class="mb-4"><div class="text-xs font-bold text-indigo-900 mb-1">${g}</div><table class="w-full text-xs"><thead><tr class="text-left text-slate-500 border-b border-slate-200"><th class="py-1 font-semibold">Case</th><th class="py-1 font-semibold text-right">Ending assets</th><th class="py-1 font-semibold text-right">vs. current</th><th class="py-1 font-semibold text-right">After-tax ending</th><th class="py-1 font-semibold text-right">Lifetime tax</th><th class="py-1 font-semibold text-right">vs. current</th><th class="py-1 font-semibold text-right">Plan status</th></tr></thead><tbody>`;
                 cases.filter(c => c.group === g).forEach(c => {
@@ -2662,6 +2784,48 @@ ${img ? `<img src="${img}" alt="Simulated asset paths">` : ''}
                     { label: 'Single-path projection', data: a.fan.map(f => f.det), borderColor: '#0f172a', borderDash: [6, 4], borderWidth: 1.5, pointRadius: 0, fill: false, tension: 0.2 }] },
                     options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Total assets across simulated markets (x-axis: your age)' } }, scales: { y: { ticks: { callback: v => '$' + (v / 1e6).toFixed(1) + 'M' } } } } });
             }
+        }
+
+
+        // ================= QCD analysis: the same gifts from the IRA (QCD) vs from savings =================
+        function qcdAnalysis() {
+            const base = readInputs(), example = base.qcdMode === 'none', heir = base.heirTaxRate, pc = v => `${Math.round(v * 100)}%`, money = fmtCurr;
+            const plan = example ? { qcdMode: 'fixed', qcdAmount: 10000, qcdPct: 1, qcdStartAge: 71 } : { qcdMode: base.qcdMode, qcdAmount: base.qcdAmount, qcdPct: base.qcdPct, qcdStartAge: base.qcdStartAge };
+            const mk = over => { const out = runProjection(Object.assign({}, base, over)), rs = out.results, dep = rs.find(r => r.endTotalAssets < 1 && r.spendGoal > 0); return { out, rs, m: scenarioMetrics(out), funded: out.totalDeficitYears === 0 && !dep }; };
+            const A = mk({ qcdMode: 'none' }), B = mk(plan), gifts = B.rs.map(r => r.qcd || 0), C = mk({ qcdMode: 'none', cashGifts: gifts });
+            const given = gifts.reduce((a, b) => a + b, 0), qy = B.rs.filter(r => r.qcd > 0), noIra = A.m.peakTrad < 1 || given < 1;
+            const gain = B.m.afterTax - C.m.afterTax, thr = Math.max(1000, 0.001 * C.m.afterTax), useQcd = !noIra && gain > thr, reasons = [];
+            if (noIra) {
+                reasons.push(A.m.peakTrad < 1 ? 'There is no IRA balance in this plan, so QCDs do not apply.' : `No QCD is made under these settings: QCDs start at age ${plan.qcdStartAge} or later and need an IRA balance. Check the start age and the plan-to age.`);
+            } else {
+                const rmdCovered = B.rs.reduce((a, r) => a + Math.min(r.qcd || 0, r.rmdRequired || 0), 0), maxAgi = Math.max(...B.rs.map((r, i) => C.rs[i].agi - r.agi)), capYears = B.rs.filter(r => r.qcd > 0 && r.qcd >= QCD_LIMIT_2026 * Math.pow(1 + base.inflation, r.year - 1) - 0.5).length, overRmd = B.rs.filter(r => r.qcd > 0 && r.qcd > r.rmdRequired + 0.5).length;
+                const ages = `${qy[0].p1Age}-${qy[qy.length - 1].p1Age}`;
+                reasons.push(`${example ? 'Example plan: ' : ''}Giving ${money(given)} over ${qy.length} year${qy.length === 1 ? '' : 's'} (ages ${ages}) through QCDs leaves ${money(Math.abs(gain))} (${(Math.abs(gain) / C.m.afterTax * 100).toFixed(1)}%) ${gain >= 0 ? 'more' : 'less'} After-Tax Ending Wealth than giving the same dollars from savings.`);
+                reasons.push(`${money(rmdCovered)} of the QCDs count toward your required minimum distributions, so that income never reaches adjusted gross income${maxAgi > 1 ? `; AGI is lower by up to ${money(maxAgi)} in a year` : ''}.`);
+                const dTax = C.m.tax - B.m.tax, dIrmaa = C.m.irmaa - B.m.irmaa;
+                reasons.push(`Lifetime tax is ${money(Math.abs(dTax))} ${dTax >= 0 ? 'lower' : 'higher'} with QCDs and ${Math.abs(dIrmaa) < 1 ? 'IRMAA surcharges are unchanged' : `IRMAA surcharges are ${money(Math.abs(dIrmaa))} ${dIrmaa >= 0 ? 'lower' : 'higher'}`}. Lower AGI also means less of your Social Security is taxed.`);
+                reasons.push(`Gifts from savings are paid with after-tax dollars and earn only the small non-itemizer deduction (${money(NONITEMIZER_GIVING_DED[base.filingStatus === 'MFJ' ? 'MFJ' : 'Single'])} a year), so almost the whole gift is a cost.`);
+                { const dIra = (B.m.endTrad - C.m.endTrad) * heir; reasons.push(`The leftover IRA ends at ${money(B.m.endTrad)} with QCDs versus ${money(C.m.endTrad)} when the same gifts come from savings, so your heirs would owe about ${money(Math.abs(dIra))} ${dIra > 0.5 ? 'more' : 'less'} tax on it at the assumed ${pc(heir)} rate (already counted in After-Tax Ending Wealth).`); }
+                reasons.push(`Compared with giving nothing, the plan ends with ${money(A.m.afterTax - B.m.afterTax)} less After-Tax Ending Wealth: the net cost of the gifts after tax savings, including the growth those dollars would have earned.`);
+                if (base.rothStrategy !== 'none') reasons.push('Roth conversions are limited so the IRA keeps enough to fund the planned QCDs; converting that money first would waste the tax advantage.');
+                if (capYears) reasons.push(`The annual limit (${money(QCD_LIMIT_2026)} per person in 2026, indexed) caps the QCD in ${capYears} year${capYears === 1 ? '' : 's'}.`);
+                if (overRmd) reasons.push(`In ${overRmd} year${overRmd === 1 ? '' : 's'} the QCD is larger than the RMD. The extra still avoids tax but does not reduce a required distribution.`);
+                if (!B.funded) reasons.push('Caution: spending is not fully funded with these gifts; address funding first.');
+            }
+            return { A, B, C, given, qy, noIra, useQcd, gain, thr, example, reasons: reasons.map(t => sgl(t)), plan, base };
+        }
+        function renderQcd() {
+            const a = qcdAnalysis(), money = fmtCurr, badge = document.getElementById('qcd-badge'), rec = document.getElementById('qcd-rec');
+            badge.textContent = a.noIra ? 'Not applicable' : (a.useQcd ? 'Give through QCDs' : 'No clear advantage');
+            const head = a.noIra ? 'No QCDs under these settings' : (a.useQcd ? 'Give through QCDs' : 'QCDs give no clear advantage');
+            rec.innerHTML = `<div class="flex items-start justify-between gap-3 flex-wrap"><div><div class="text-[11px] font-bold uppercase tracking-wider text-emerald-700">${a.example ? 'Example (QCDs are off in your plan)' : 'Recommendation'}</div>
+                <div class="text-base font-bold text-emerald-900">${head}</div>
+                <div class="text-xs text-emerald-800 mt-0.5">${a.noIra ? '' : (a.useQcd ? `Same ${money(a.given)} to charity, but <b>${money(a.gain)}</b> more After-Tax Ending Wealth than giving from savings` : `Within ${money(a.thr)} of giving from savings`)}${a.example && !a.noIra ? ` &middot; example: ${money(a.plan.qcdAmount)} a year from age ${a.plan.qcdStartAge}` : ''}</div></div>
+                ${a.example && !a.noIra ? '<button type="button" id="btn-apply-qcd-example" class="ui-btn ui-btn-primary">Use this plan</button>' : ''}</div>`;
+            document.getElementById('qcd-reasons').innerHTML = a.reasons.map(t => `<li>${t}</li>`).join('');
+            const row = (label, r, given, hi, note) => `<tr class="border-b border-slate-100 ${hi ? 'bg-emerald-50 font-semibold' : ''}"><td class="py-1.5 px-2 text-left">${label}${hi ? ' <span class="ml-1 text-[10px] bg-emerald-600 text-white px-1.5 py-0.5 rounded-full">Better</span>' : ''}</td><td class="py-1.5 px-2">${given > 0.5 ? money(given) : '-'}</td><td class="py-1.5 px-2">${money(r.m.tax)}</td><td class="py-1.5 px-2">${money(r.m.irmaa)}</td><td class="py-1.5 px-2">${money(r.m.endTrad)}</td><td class="py-1.5 px-2 text-slate-900">${money(r.m.afterTax)}</td><td class="py-1.5 px-2 ${note > 0.5 ? 'text-emerald-600 font-semibold' : note < -0.5 ? 'text-rose-600 font-semibold' : 'text-slate-400'}">${Math.abs(note) < 0.5 ? '-' : (note > 0 ? '+' : '-') + money(Math.abs(note))}</td></tr>`;
+            document.getElementById('qcd-tbody').innerHTML = a.noIra ? '' :
+                row('No giving (reference)', a.A, 0, false, 0) + row(a.example ? 'QCDs from your IRA (example)' : 'QCDs from your IRA', a.B, a.given, a.useQcd, a.gain) + row('Same gifts from savings', a.C, a.given, !a.useQcd && false, 0);
         }
 
         // ================= Social Security claiming analysis: every claiming age, recommend one, explain why =================
@@ -2887,6 +3051,9 @@ ${img ? `<img src="${img}" alt="Simulated asset paths">` : ''}
             const topRate = taxed.reduce((m, r) => Math.max(m, r.marginalRate), 0), topRow = taxed.find(r => r.marginalRate === topRate), irm = rs.find(r => r.irmaaCost > 0);
             let tax = topRow ? `The highest federal bracket reached is ${Math.round(topRate * 100)}% (first at your age ${topRow.p1Age}).` : 'No federal income tax is due in retirement under these inputs.';
             tax += irm ? ` Medicare IRMAA surcharges begin at your age ${irm.p1Age}.` : ' No IRMAA surcharges are triggered.';
+            { const qs = qcdStatus(); if (qs.on && !qs.made) tax += ` QCDs are turned on but none are made: ${lcFirst(qs.why)}`; }
+            if ((out.totalLifetimeQcd || 0) > 0.5) { const qr = simulationResults.filter(r => r.qcd > 0); tax += ` QCDs total about ${fmtCurr(out.totalLifetimeQcd)} (ages ${qr[0].p1Age}-${qr[qr.length - 1].p1Age}); they count toward RMDs and stay out of taxable income.`; }
+            if ((out.totalLifetimeStateTax || 0) > 0.5) tax += ` State income tax adds about ${fmtCurr(out.totalLifetimeStateTax)} over the plan.`;
             const label = document.querySelector('#inp-roth-strategy option:checked').textContent.trim();
             const rec = document.getElementById('inp-roth-strategy').value === 'none'
                 ? 'Tip: try a bracket-filling or Optimal Roth strategy and compare them on After-Tax Ending Wealth.'
@@ -2899,6 +3066,12 @@ ${img ? `<img src="${img}" alt="Simulated asset paths">` : ''}
             const ex = simulationResults.filter(r => r.rmdSaved > 0.5), exTotal = ex.reduce((a, r) => a + r.rmdSaved, 0);
             document.getElementById('legacy-excess-note').textContent = ex.length ? `Excess RMD / surplus income in this plan: ${fmtCurr(exTotal)} over ${ex.length} year${ex.length === 1 ? '' : 's'}.` : 'No excess RMD or surplus income in this plan, so this choice does not change the results.';
             document.getElementById('notes-infl').textContent = `${(parseFloat(document.getElementById('inp-inflation-rate').value) || 0).toFixed(1)}%`;
+            renderQcdIndicators();
+            const sn = document.getElementById('summary-state-tax-note'), si = readInputs();
+            if (stateNoteDefault === null) stateNoteDefault = sn.innerHTML;
+            sn.innerHTML = si.stateRate > 0
+                ? `<span class="font-bold text-slate-900">State income tax is modeled:</span> a flat ${(si.stateRate * 100).toFixed(1)}% on interest, dividends and gains${si.stateExemptRet ? '' : ', plus IRA, pension and Roth-conversion income'}${si.stateExemptSS ? '' : ' and taxable Social Security'}, after a ${fmtCurr(si.stateDeduction)} deduction indexed with Inflation/COLA. It is paid from the portfolio along with federal tax. State rules vary, so confirm yours (see the <a href="https://taxfoundation.org/research/all/state/2026-state-tax-changes/" target="_blank" rel="noopener noreferrer" class="underline text-indigo-600 hover:text-indigo-800">Tax Foundation</a>).`
+                : stateNoteDefault;
             document.getElementById('summary-solvency-desc').textContent = t.solv;
             document.getElementById('summary-tax-desc').textContent = t.tax;
             document.getElementById('summary-rec-desc').textContent = t.rec;
@@ -2910,6 +3083,7 @@ ${img ? `<img src="${img}" alt="Simulated asset paths">` : ''}
 
             document.getElementById('kpi-ending-assets').textContent = fmtCurr(endingAssets);
             document.getElementById('kpi-lifetime-tax').textContent = fmtCurr(totalTax);
+            document.getElementById('kpi-tax-sub').textContent = readInputs().stateRate > 0 ? 'Federal + state, retirement + Roth conv.' : 'Retirement + Roth conversions';
             const heirRate = lastRunOut ? lastRunOut.heirTaxRate : 0;
             document.getElementById('kpi-after-tax-wealth').textContent = fmtCurr(finalRow ? finalRow.endTotalAssets - finalRow.balTrad * heirRate : 0);
             document.getElementById('kpi-after-tax-sub').textContent = `IRA taxed at ${(heirRate * 100).toFixed(0)}% \u2022 brokerage step-up`;
@@ -2944,6 +3118,38 @@ ${img ? `<img src="${img}" alt="Simulated asset paths">` : ''}
                 <span class="text-slate-500">${document.getElementById('chk-chart-pre').checked ? 'Pre-retirement rows are shown below.' : 'Tick "Include pre-retirement years" to see them year by year.'}</span>`;
         }
 
+
+        // What the QCD inputs are doing in this plan (shown next to the inputs, on the Overview, in the timeline)
+        function qcdStatus() {
+            const base = readInputs(), on = base.qcdMode !== 'none', rs = simulationResults, total = (lastRunOut && lastRunOut.totalLifetimeQcd) || 0;
+            if (!on) return { on: false };
+            const qy = rs.filter(r => r.qcd > 0);
+            if (total >= 1 && qy.length) return { on: true, made: true, total, first: qy[0].p1Age, last: qy[qy.length - 1].p1Age, years: qy.length };
+            const start = Math.max(70, base.qcdStartAge), horizon = base.p1TargetAge, eligible = rs.filter(r => !r.isWorking && r.p1Age >= start);
+            let why;
+            if (start > horizon) why = `QCDs would start at age ${start}, after the plan ends at age ${horizon}.`;
+            else if (!eligible.length) why = `you are still working at ages ${start} and over; QCDs begin after retirement.`;
+            else if (eligible.every(r => r.balTrad < 1)) why = `the IRA is empty from age ${eligible[0].p1Age}, so there is nothing to give from${base.rothStrategy !== 'none' ? '; Roth conversions and spending use it up first (convert less on the Roth tab to leave an IRA for QCDs)' : ''}.`;
+            else if (base.qcdMode === 'rmd' && eligible.every(r => r.rmdRequired < 1)) why = 'there is no RMD in those years, so a share of RMD is zero.';
+            else why = base.qcdMode === 'rmd' ? 'the share of RMD is 0%.' : 'the QCD amount is $0.';
+            return { on: true, made: false, total: 0, why: sgl(why.replace(/^./, c => c.toUpperCase())) };
+        }
+        const lcFirst = t => /^[A-Z][a-z]/.test(t) ? t[0].toLowerCase() + t.slice(1) : t;   // keep acronyms such as QCDs intact
+        function renderQcdIndicators() {
+            const q = qcdStatus(), st = document.getElementById('qcd-status'), card = document.getElementById('kpi-qcd-card'), row = document.getElementById('kpi-row');
+            st.classList.toggle('hidden', !q.on);
+            card.classList.toggle('hidden', !q.on);
+            row.classList.toggle('lg:grid-cols-5', q.on); row.classList.toggle('lg:grid-cols-4', !q.on);
+            if (!q.on) return;
+            if (q.made) {
+                st.textContent = sgl(`QCDs in this plan: ${fmtCurr(q.total)} over ${q.years} year${q.years === 1 ? '' : 's'} (ages ${q.first}-${q.last}).`); st.className = 'text-[11px] leading-snug font-semibold text-emerald-400';
+                document.getElementById('kpi-qcd').textContent = fmtCurr(q.total); document.getElementById('kpi-qcd-sub').textContent = sgl(`Ages ${q.first}-${q.last}, from the IRA`);
+            } else {
+                st.textContent = `No QCDs are made: ${lcFirst(q.why)}`; st.className = 'text-[11px] leading-snug font-semibold text-amber-400';
+                document.getElementById('kpi-qcd').textContent = '$0'; document.getElementById('kpi-qcd-sub').textContent = 'None made, see the QCD tab';
+            }
+        }
+
         // Milestone timeline (ordered by your age) shown above the chart
         function renderMilestoneStrip() {
             const el = document.getElementById('milestone-strip'), rs = simulationResults, ev = [];
@@ -2954,6 +3160,7 @@ ${img ? `<img src="${img}" alt="Simulated asset paths">` : ''}
             add(rs.find(r => r.ssIncome > 0), 'Social Security starts', 'bg-teal-500');
             add(rs.find(r => r.pensionIncome > 0), 'Pension starts', 'bg-orange-500');
             add(rs.find(r => r.rmdAmount > 0), 'RMDs start', 'bg-amber-500');
+            { const qy = rs.filter(r => r.qcd > 0); if (qy.length) add(qy[0], qy.length > 1 ? `QCDs (ages ${qy[0].p1Age}-${qy[qy.length - 1].p1Age})` : 'QCD', 'bg-emerald-500'); }
             add(rs.find(r => r.irmaaCost > 0), 'First IRMAA surcharge', 'bg-rose-500');
             add(rs.find(r => r.endTotalAssets < 1 && r.spendGoal > 0), 'Funds depleted', 'bg-red-600');
             ev.sort((a, b) => a.age - b.age);
@@ -2985,6 +3192,8 @@ ${img ? `<img src="${img}" alt="Simulated asset paths">` : ''}
             const rmdStartAge = getRMDStartAge(p1BirthYear);
 
             document.body.classList.toggle('show-pre', document.getElementById('chk-chart-pre').checked);
+            document.body.classList.toggle('has-state', readInputs().stateRate > 0);
+            document.body.classList.toggle('has-qcd', readInputs().qcdMode !== 'none');
             syncFilingStatusUI();
             renderPreRetirementSummary();
             renderBracketStrip();
@@ -3011,6 +3220,7 @@ ${img ? `<img src="${img}" alt="Simulated asset paths">` : ''}
                     <td class="py-2 px-3 font-semibold text-emerald-700">${r.ssIncome > 0 ? fmtCurr(r.ssIncome) : '-'}</td>
                     <td class="py-2 px-3">${r.pensionIncome > 0 ? fmtCurr(r.pensionIncome) : '-'}</td>
                     <td class="py-2 px-3 border-r border-slate-200">${r.rmdAmount > 0 ? fmtCurr(r.rmdAmount) : '-'}</td>
+                    <td class="py-2 px-3 qcd-col border-r border-slate-200 text-emerald-700 font-semibold">${r.qcd > 0 ? fmtCurr(r.qcd) : '-'}</td>
                     <td class="py-2 px-3 font-semibold text-indigo-700">${r.rothConvAmount > 0 ? fmtCurr(r.rothConvAmount) : '-'}</td>
                     <td class="py-2 px-3">${r.wdCash > 0 ? fmtCurr(r.wdCash) : '-'}</td>
                     <td class="py-2 px-3">${r.wdbrokerage > 0 ? fmtCurr(r.wdbrokerage) : '-'}</td>
@@ -3021,6 +3231,7 @@ ${img ? `<img src="${img}" alt="Simulated asset paths">` : ''}
                     <td class="py-2 px-3">${fmtPct(r.effectiveRate)}</td>
                     <td class="py-2 px-3">${fmtPct(r.marginalRate)}</td>
                     <td class="py-2 px-3 font-semibold text-rose-700">${fmtCurr(r.fedTax)}</td>
+                    <td class="py-2 px-3 state-col text-rose-600">${r.stateTax > 0 ? fmtCurr(r.stateTax) : '-'}</td>
                     <td class="py-2 px-3 bg-rose-50/50 font-bold text-rose-900">${fmtCurr(r.cumulativeTax)}</td>
                     <td class="py-2 px-3">${r.irmaaTier}</td>
                     <td class="py-2 px-3">${r.irmaaCost > 0 ? fmtCurr(r.irmaaCost) : '-'}</td>
@@ -3107,6 +3318,14 @@ ${img ? `<img src="${img}" alt="Simulated asset paths">` : ''}
                 borderWidth: 1,
                 stack: 'tax'
             },
+            ...(rows.some(r => r.stateTax > 0) ? [{
+                label: 'State Income Tax',
+                data: rows.map(r => r.stateTax),
+                backgroundColor: 'rgba(251, 146, 60, 0.7)',
+                borderColor: '#fb923c',
+                borderWidth: 1,
+                stack: 'tax'
+            }] : []),
             {
                 label: 'Medicare IRMAA Surcharges',
                 data: rows.map(r => r.irmaaCost),
@@ -3246,6 +3465,11 @@ ${img ? `<img src="${img}" alt="Simulated asset paths">` : ''}
             document.getElementById('app-version').textContent = APP_VERSION;
             ['input', 'change'].forEach(ev => document.getElementById('panel-content-body').addEventListener(ev, scheduleSave, true));
             ['chk-chart-pre', 'chk-chart-pre-chart', 'scn-name'].forEach(id => ['input', 'change'].forEach(ev => document.getElementById(id).addEventListener(ev, scheduleSave)));
+            document.getElementById('qcd-rec').addEventListener('click', (e) => {
+                if (!e.target.closest('#btn-apply-qcd-example')) return;
+                const put = (id, v) => { const el = document.getElementById(id); el.value = String(v); el.dispatchEvent(new Event('change')); };
+                put('inp-qcd-amount', 10000); put('inp-qcd-age', 71); put('inp-qcd-mode', 'fixed');
+            });
             document.getElementById('ss-rec').addEventListener('click', (e) => {
                 const b = e.target.closest('#btn-apply-ss-rec'); if (!b) return;
                 const base = readInputs(), put = (id, v) => { const el = document.getElementById(id); el.value = String(v); el.dispatchEvent(new Event('change')); };
